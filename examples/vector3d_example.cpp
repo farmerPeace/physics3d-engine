@@ -1,6 +1,5 @@
-#include "physics/Vector3D.hpp"
+#include "physics/vector3d.hpp"
 #include <iostream>
-
 
 int main() {
     // Ejemplo: Movimiento simple

@@ -1,4 +1,4 @@
-#include "physics/Matrix3.hpp"
+#include "physics/matrix3d.hpp"
 #include <cassert>
 #include <iostream>
 #include <cmath>
@@ -12,7 +12,7 @@ bool float_equal(float a, float b, float eps = EPS) {
 }
 
 void test_constructors_and_access() {
-    Matrix3 m(1,2,3,4,5,6,7,8,9);
+    Matrix3D m(1,2,3,4,5,6,7,8,9);
 
     assert(float_equal(m(0,0), 1));
     assert(float_equal(m(0,1), 2));
@@ -28,8 +28,8 @@ void test_constructors_and_access() {
 }
 
 void test_identity_and_zero() {
-    Matrix3 id = Matrix3::Identity();
-    Matrix3 zero = Matrix3::Zero();
+    Matrix3D id = Matrix3D::Identity();
+    Matrix3D zero = Matrix3D::Zero();
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
@@ -45,29 +45,29 @@ void test_identity_and_zero() {
 }
 
 void test_arithmetic_operators() {
-    Matrix3 a(1,2,3,4,5,6,7,8,9);
-    Matrix3 b(9,8,7,6,5,4,3,2,1);
+    Matrix3D a(1,2,3,4,5,6,7,8,9);
+    Matrix3D b(9,8,7,6,5,4,3,2,1);
 
-    Matrix3 sum = a + b;
-    Matrix3 diff = a - b;
+    Matrix3D sum = a + b;
+    Matrix3D diff = a - b;
 
     assert(float_equal(sum(0,0), 10));
     assert(float_equal(diff(2,2), 8));
 
-    Matrix3 scaled = a * 2.0f;
+    Matrix3D scaled = a * 2.0f;
     assert(float_equal(scaled(1,1), 10));
 }
 
 void test_matrix_multiplication() {
-    Matrix3 a(1,4,7,
+    Matrix3D a(1,4,7,
               2,5,8,
               3,6,9);
 
-    Matrix3 b(9,6,3,
+    Matrix3D b(9,6,3,
               8,5,2,
               7,4,1);
 
-    Matrix3 c = a * b;
+    Matrix3D c = a * b;
 
     // Resultado correcto:
     // [ 90  54  18 ]
@@ -88,8 +88,8 @@ void test_matrix_multiplication() {
 }
 
 void test_transpose() {
-    Matrix3 m(1,2,3,4,5,6,7,8,9);
-    Matrix3 t = m.Transposed();
+    Matrix3D m(1,2,3,4,5,6,7,8,9);
+    Matrix3D t = m.Transposed();
 
     assert(float_equal(t(0,1), m(1,0)));
     assert(float_equal(t(1,2), m(2,1)));
@@ -97,24 +97,24 @@ void test_transpose() {
 }
 
 void test_transpose_multiplication_property() {
-    Matrix3 a(1,2,3,4,5,6,7,8,9);
-    Matrix3 b(9,8,7,6,5,4,3,2,1);
+    Matrix3D a(1,2,3,4,5,6,7,8,9);
+    Matrix3D b(9,8,7,6,5,4,3,2,1);
 
-    Matrix3 lhs = (a * b).Transposed();
-    Matrix3 rhs = b.Transposed() * a.Transposed();
+    Matrix3D lhs = (a * b).Transposed();
+    Matrix3D rhs = b.Transposed() * a.Transposed();
 
     assert(lhs == rhs);
 }
 
 void test_determinant_and_inverse() {
-    Matrix3 m(4,7,2,
+    Matrix3D m(4,7,2,
               3,6,1,
               2,5,1);
 
     assert(m.IsInvertible());
 
-    Matrix3 inv = m.Inverted();
-    Matrix3 result = m * inv;
+    Matrix3D inv = m.Inverted();
+    Matrix3D result = m * inv;
 
     // // No usar IsIdentity() exacto
     // for (int i = 0; i < 3; ++i) {
@@ -129,19 +129,19 @@ void test_determinant_and_inverse() {
 
 void test_rotation_matrix() {
     Vector3D axis(0,1,0);
-    Matrix3 rot = Matrix3::Rotation(PI / 3.0f, axis);
+    Matrix3D rot = Matrix3D::Rotation(PI / 3.0f, axis);
 
     assert(rot.IsOrthogonal());
     assert(float_equal(std::abs(rot.Determinant()), 1.0f));
 }
 
 void test_lerp() {
-    Matrix3 a = Matrix3::Identity();
-    Matrix3 b(2,0,0,
+    Matrix3D a = Matrix3D::Identity();
+    Matrix3D b(2,0,0,
               0,2,0,
               0,0,2);
 
-    Matrix3 mid = Matrix3::Lerp(a, b, 0.5f);
+    Matrix3D mid = Matrix3D::Lerp(a, b, 0.5f);
 
     assert(float_equal(mid(0,0), 1.5f));
     assert(float_equal(mid(1,1), 1.5f));
@@ -159,6 +159,6 @@ int main() {
     test_rotation_matrix();
     test_lerp();
 
-    std::cout << "Todos los tests de Matrix3 pasaron correctamente." << std::endl;
+    std::cout << "Todos los tests de Matrix3D pasaron correctamente." << std::endl;
     return 0;
 }

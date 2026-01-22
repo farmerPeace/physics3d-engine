@@ -3,7 +3,6 @@
 #include <type_traits>
 #include <stdexcept>
 
-
 class Vector3D {
 private:
     float x_, y_, z_;
