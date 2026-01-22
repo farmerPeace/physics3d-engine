@@ -14,7 +14,7 @@ public:
     
     explicit Matrix3(const float data[9]);
 
-    Matrix3(Vector3D &col1, Vector3D &col2, Vector3D &col3);
+    Matrix3(const Vector3D &col1, const Vector3D &col2, const Vector3D &col3);
 
     // Matrices Especiales
     static Matrix3 Identity();
