@@ -70,7 +70,7 @@ public:
 
     bool IsInvertible() const;
     Matrix3 Inverted() const;
-    Matrix3 Invert();
+    Matrix3 &Invert();
 
     // Otras funciones
     float Trace() const;
