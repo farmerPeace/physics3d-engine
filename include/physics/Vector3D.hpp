@@ -11,6 +11,7 @@ public:
     // Constructores
     Vector3D();
     Vector3D(float x, float y, float z);
+    Vector3D(const float arr[3]);
 
     // Getters y 
     float x() const;
@@ -47,8 +48,8 @@ public:
     float &operator [] (int index);
 
     // Producto punto y producto cruz
-    float Dot (const Vector3D &rhs) const;
-    Vector3D Cross(const Vector3D &rhs) const;
+    float Dot3D (const Vector3D &rhs) const;
+    Vector3D Cross3D(const Vector3D &rhs) const;
 
     // Magnitud y magnitud al cuadrado
     float Magnitude() const;

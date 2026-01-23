@@ -15,7 +15,7 @@ void test_vector_basics() {
     assert(d.x() == 3 && d.y() == 3 && d.z() == 3);
 
     // Producto punto
-    float dot = a.Dot(b);
+    float dot = a.Dot3D(b);
     assert(dot == 32);
 
     std::cout << "Test Basicos Pasados" << std::endl;
@@ -36,7 +36,7 @@ void test_normalization() {
 void test_cross_product() {
     Vector3D i (1, 0, 0);
     Vector3D j (0, 1, 0);
-    Vector3D k = i.Cross(j);
+    Vector3D k = i.Cross3D(j);
 
     assert(k.x() == 0 && k.y() == 0 && k.z() == 1);
 
