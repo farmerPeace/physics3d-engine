@@ -13,7 +13,9 @@ option(BUILD_EXAMPLES "Build examples" ON)
 # Biblioteca principal
 add_library(physics 
     src/math/vector3d.cpp 
-    src/math/matrix3d.cpp)
+    src/math/matrix3d.cpp
+    src/math/vector4d.cpp
+    )
 
 # Headers
 target_include_directories(physics
@@ -32,6 +34,10 @@ if (BUILD_TESTS)
     add_executable(test_matrix3d tests/math/test_matrix3d.cpp)
     target_link_libraries(test_matrix3d physics)
     add_test(NAME matrix3d_test COMMAND test_matrix3d)
+
+    add_executable(test_vector4d tests/math/test_vector4d.cpp)
+    target_link_libraries(test_vector4d physics)
+    add_test(NAME matrix4d_test COMMAND test_matrix4d)
 endif()
 
 # Ejemplos

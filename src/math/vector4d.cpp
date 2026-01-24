@@ -74,10 +74,7 @@ Vector4D Vector4D::operator - (const Vector4D &rhs) const {
 }
 
 // Operadres multiplicacion y division con escalar in place
-template <typename Scalar>
-Vector4D &Vector4D::operator *= (const Scalar &scalar) {
-    static_assert(std::is_arithmetic<Scalar>, "Scalar debe ser aritmetico");
-
+Vector4D &Vector4D::operator *= (const float &scalar) {
     x_ *= static_cast<float>(scalar);
     y_ *= static_cast<float>(scalar);
     z_ *= static_cast<float>(scalar);
@@ -86,10 +83,7 @@ Vector4D &Vector4D::operator *= (const Scalar &scalar) {
     return *this;
 }
 
-template <typename Scalar>
-Vector4D &Vector4D::operator /= (const Scalar &scalar) {
-    static_assert(std::is_arithmetic<Scalar>, "Scalar debe ser aritmetico");
-
+Vector4D &Vector4D::operator /= (const float &scalar) {
     const float scalar_f = static_cast<float>(scalar);
 
     if (std::abs(scalar_f) < EPSILON) {
@@ -107,15 +101,11 @@ Vector4D &Vector4D::operator /= (const Scalar &scalar) {
 }
 
 // Operadores multiplicacion y division con escalar 
-template <typename Scalar>
-Vector4D Vector4D::operator * (const Scalar &scalar) const {
-    static_assert(std::is_arithmetic<Scalar>, "Scalar debe ser aritmetico");
+Vector4D Vector4D::operator * (const float &scalar) const {
     return Vector4D(x_ * scalar, y_ * scalar, z_ * scalar, w_ * scalar);
 }
 
-template <typename Scalar>
-Vector4D Vector4D::operator / (const Scalar &scalar) const {
-    static_assert(std::is_arithmetic<Scalar>, "Scalar debe ser aritmetico");
+Vector4D Vector4D::operator / (const float &scalar) const {
 
     const float scalar_f = static_cast<float>(scalar);
 
@@ -135,7 +125,6 @@ Vector4D Vector4D::operator - () const {
 
 // Operadores de comparación
 bool Vector4D::operator == (const Vector4D &rhs) const {
-    const float epsilon = 1e-5f;
     return (std::abs(x_ - rhs.x_) <= EPSILON &&
             std::abs(y_ - rhs.y_) <= EPSILON &&
             std::abs(z_ - rhs.z_) <= EPSILON &&
@@ -165,31 +154,39 @@ Vector4D Vector4D::ComponentWiseMultiply (const Vector4D &rhs) const {
 }
 
 float Vector4D::Magnitude () const {
+    if (Vector4D::IsPoint()) {
+        throw std::domain_error("La magnitud de un punto homogeneo no esta definida");
+    }
+
     return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_ );
 }
 
 float Vector4D::SquareMagnitude () const {
+    if (IsPoint()) {
+        throw std::domain_error("La magnitud de un punto homogeneo no esta definida");
+    }
+
     return x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_;
 }
 
 
 Vector4D &Vector4D::Normalize () {
-    const float sq_mag = SquareMagnitude();
+    if (IsPoint()) {
+        throw std::domain_error("No se puede normalizar un punto homogeneo");
+    }
+
+    const float sq_mag = x_ * x_ + y_ * y_ + z_ * z_;
 
     if (sq_mag > EPSILON) {
         const float inv_mag = 1.0f / std::sqrt(sq_mag);
-
         x_ *= inv_mag;
         y_ *= inv_mag;
         z_ *= inv_mag;
-        w_ *= inv_mag;
     } else {
-        x_ = 0.0f;
-        y_ = 0.0f;
-        z_ = 0.0f;
-        w_ = 0.0f;
+        x_ = y_ = z_ = 0.0f;
     }
 
+    w_ = 0.0f;
     return *this;
 }
 
@@ -199,12 +196,34 @@ Vector4D Vector4D::Normalized () const {
     return result;
 }
 
-float Vector4D::Distance (const Vector4D &vecA, const  Vector4D &vecB) {
-    return (vecB - vecA).Magnitude();
+float Vector4D::Distance(const Vector4D& a, const Vector4D& b) {
+    if (!a.IsPoint() || !b.IsPoint()) {
+        throw std::domain_error("Distance requiere dos puntos homogeneos");
+    }
+
+    Vector4D ah = a.Homogenized();
+    Vector4D bh = b.Homogenized();
+
+    const float dx = bh.x_ - ah.x_;
+    const float dy = bh.y_ - ah.y_;
+    const float dz = bh.z_ - ah.z_;
+
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-float Vector4D::SquareDistance (const Vector4D &vecA, const  Vector4D &vecB) {
-    return (vecB - vecA).SquareMagnitude();
+float Vector4D::SquareDistance(const Vector4D& a, const Vector4D& b) {
+    if (!a.IsPoint() || !b.IsPoint()) {
+        throw std::domain_error("SquareDistance requiere dos puntos homogeneos");
+    }
+
+    Vector4D ah = a.Homogenized();
+    Vector4D bh = b.Homogenized();
+
+    const float dx = bh.x_ - ah.x_;
+    const float dy = bh.y_ - ah.y_;
+    const float dz = bh.z_ - ah.z_;
+
+    return dx * dx + dy * dy + dz * dz;
 }
 
 Vector4D &Vector4D::Homogenize () {
@@ -258,37 +277,27 @@ Vector3D Vector4D::ToDirection3D () const {
 }
 
 Vector4D& Vector4D::MakePoint() {
-    if (!IsPoint()) {
-        if (IsDirection()) {
-            w_ = 1.0f;
-        } else {
-            Homogenize(); 
-        }
+    if (IsDirection()) {
+        throw std::domain_error("No se puede convertir una direccion en punto sin referencia");
     }
+    
+    if (std::abs(w_ - 1.0f) > EPSILON) {
+        Homogenize();
+    }
+
     return *this;
 }
 
 Vector4D& Vector4D::MakeDirection() {
-    if (!IsDirection()) {
-        w_ = 0.0f;
-    }
-    return *this;
+    w_ = 0.0f;
+    return *this;;
 }
 
 const float *Vector4D::Data () const {
-    static thread_local float data[4];
-    data[0] = x_;
-    data[1] = y_; 
-    data[2] = z_;
-    data[3] = w_;
-    return data;
+    return &x_;
 }
 
 float *Vector4D::Data () {
-    static thread_local float data[4];
-    data[0] = x_;
-    data[1] = y_;
-    data[2] = z_;
-    data[3] = w_;
-    return data;
+    return &x_;
 }
+

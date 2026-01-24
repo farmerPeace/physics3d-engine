@@ -1,5 +1,6 @@
 #pragma once
 #include "physics/vector3d.hpp"
+#include <type_traits>
 
 class Vector4D {
 private:
@@ -39,18 +40,12 @@ public:
     Vector4D operator - (const Vector4D &rhs) const;
 
     // Operadores multiplicación y división con escalar in place
-    template <typename Scalar>
-    Vector4D &operator *= (const Scalar &scalar);
-
-    template <typename Scalar>
-    Vector4D &operator /= (const Scalar &scalar);
+    Vector4D &operator *= (const float &scalar);
+    Vector4D &operator /= (const float &scalar);
 
     // Operadores multiplicacion y division con escalar
-    template <typename Scalar>
-    Vector4D operator * (const Scalar &scalar) const;
-
-    template <typename Scalar>
-    Vector4D operator / (const Scalar &scalar) const;
+    Vector4D operator * (const float &scalar) const;
+    Vector4D operator / (const float &scalar) const;
 
     // Operador de negacion
     Vector4D operator - () const;
@@ -77,15 +72,15 @@ public:
     static float Distance(const Vector4D &vecA, const Vector4D &vecB);
     static float SquareDistance(const Vector4D &vecA, const Vector4D &vecB);
 
-    // Conversión a Vector3D
-    Vector3D ToVector3D() const;
-    Vector3D ToDirection3D() const;
-
     // Operadores de homogenizacion
     Vector4D &Homogenize ();
     Vector4D Homogenized () const;
     bool IsPoint () const;
     bool IsDirection () const;
+
+    // Conversión a Vector3D
+    Vector3D ToVector3D() const;
+    Vector3D ToDirection3D() const;
 
     // Modificadores
     Vector4D &MakePoint ();
