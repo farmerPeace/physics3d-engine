@@ -5,7 +5,7 @@
 #include "physics/vector4d.hpp"
 #include "physics/vector3d.hpp"
 
-#define EPSILON 1e-6f;
+#define EPSILON 1e-6f
 
 // Constructores
 Vector4D::Vector4D(): x_(0), y_(0), z_(0), w_(0) {}
@@ -92,7 +92,7 @@ Vector4D &Vector4D::operator /= (const Scalar &scalar) {
 
     const float scalar_f = static_cast<float>(scalar);
 
-    if (std::abs(scalar_f) < std::numeric_limits<float>::epsilon()) {
+    if (std::abs(scalar_f) < EPSILON) {
         throw std::domain_error("Division por (casi) cero en un Vector4D");
     }
 
@@ -119,7 +119,7 @@ Vector4D Vector4D::operator / (const Scalar &scalar) const {
 
     const float scalar_f = static_cast<float>(scalar);
 
-    if (std::abs(scalar_f) < std::numeric_limits<float>::epsilon()) {
+    if (std::abs(scalar_f) < EPSILON) {
         throw std::domain_error("Division por (casi) cero en un Vector4D");
     }
 
@@ -136,12 +136,159 @@ Vector4D Vector4D::operator - () const {
 // Operadores de comparación
 bool Vector4D::operator == (const Vector4D &rhs) const {
     const float epsilon = 1e-5f;
-    return (std::abs(x_ - rhs.x_) <= epsilon &&
-            std::abs(y_ - rhs.y_) <= epsilon &&
-            std::abs(z_ - rhs.z_) <= epsilon &&
-            std::abs(w_ - rhs.w_) <= epsilon);
+    return (std::abs(x_ - rhs.x_) <= EPSILON &&
+            std::abs(y_ - rhs.y_) <= EPSILON &&
+            std::abs(z_ - rhs.z_) <= EPSILON &&
+            std::abs(w_ - rhs.w_) <= EPSILON);
 }
 
 bool Vector4D::operator != (const Vector4D &rhs) const {
     return !(*this == rhs);
+}
+
+float Vector4D::Dot4D (const Vector4D &rhs) const {
+    return (
+        x_ * rhs.x() +
+        y_ * rhs.y() +
+        z_ * rhs.z() +
+        w_ * rhs.w()
+    );
+}
+
+Vector4D Vector4D::ComponentWiseMultiply (const Vector4D &rhs) const {
+    return Vector4D ( 
+        x_ * rhs.x(),
+        y_ * rhs.y(),
+        z_ * rhs.z(),
+        w_ * rhs.w()
+    );
+}
+
+float Vector4D::Magnitude () const {
+    return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_ );
+}
+
+float Vector4D::SquareMagnitude () const {
+    return x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_;
+}
+
+
+Vector4D &Vector4D::Normalize () {
+    const float sq_mag = SquareMagnitude();
+
+    if (sq_mag > EPSILON) {
+        const float inv_mag = 1.0f / std::sqrt(sq_mag);
+
+        x_ *= inv_mag;
+        y_ *= inv_mag;
+        z_ *= inv_mag;
+        w_ *= inv_mag;
+    } else {
+        x_ = 0.0f;
+        y_ = 0.0f;
+        z_ = 0.0f;
+        w_ = 0.0f;
+    }
+
+    return *this;
+}
+
+Vector4D Vector4D::Normalized () const {
+    Vector4D result = *this;
+    result.Normalize();
+    return result;
+}
+
+float Vector4D::Distance (const Vector4D &vecA, const  Vector4D &vecB) {
+    return (vecB - vecA).Magnitude();
+}
+
+float Vector4D::SquareDistance (const Vector4D &vecA, const  Vector4D &vecB) {
+    return (vecB - vecA).SquareMagnitude();
+}
+
+Vector4D &Vector4D::Homogenize () {
+
+    if (std::abs(w_) < EPSILON) {
+        return *this;
+    }
+
+    const float w_inv = 1.0f / w_;
+    x_ *= w_inv;
+    y_ *= w_inv;
+    z_ *= w_inv;
+    w_ = 1.0f;
+
+    return *this;
+}
+
+Vector4D Vector4D::Homogenized () const {
+    if (std::abs(w_) < EPSILON) {
+        return Vector4D(x_, y_, z_, w_);
+    }
+
+    const float w_inv = 1.0f / w_;
+
+    return Vector4D (
+    x_ * w_inv,
+    y_ * w_inv,
+    z_ * w_inv,
+    1.0f
+    );
+}
+
+bool Vector4D::IsPoint () const {
+    return std::abs(w_) > EPSILON;
+}
+
+bool Vector4D::IsDirection () const {
+    return !(Vector4D::IsPoint());
+}
+
+Vector3D Vector4D::ToVector3D () const {
+    if (Vector4D::IsPoint()) {
+        return Vector3D(x_/w_, y_/w_, z_/w_);
+    } else {
+        throw std::domain_error("No se puede convertir");
+    }
+}
+
+Vector3D Vector4D::ToDirection3D () const {
+    return Vector3D(x_, y_, z_);
+}
+
+Vector4D& Vector4D::MakePoint() {
+    if (!IsPoint()) {
+        if (IsDirection()) {
+            w_ = 1.0f;
+        } else {
+            Homogenize(); 
+        }
+    }
+    return *this;
+}
+
+Vector4D& Vector4D::MakeDirection() {
+    if (!IsDirection()) {
+        w_ = 0.0f;
+    }
+    return *this;
+}
+
+const float *Vector4D::Data () const {
+    static thread_local float data[4];
+    data[0] = x_;
+    data[1] = y_; 
+    data[2] = z_;
+    data[3] = w_;
+    return data;
+}
+
+float *Vector4D::Data () {
+    static thread_local float data[4];
+    data[0] = x_;
+    data[1] = y_;
+    data[2] = z_;
+    data[3] = w_;
+    return data;
 }

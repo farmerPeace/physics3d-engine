@@ -60,10 +60,10 @@ public:
     bool operator != (const Vector4D &rhs) const;
 
     // Producto punto
-    float Dot (const Vector3D &rhs) const;
+    float Dot4D (const Vector4D &rhs) const;
 
     // Producto cruz
-    Vector4D Cross (const Vector4D &rhs) const;
+    Vector4D ComponentWiseMultiply (const Vector4D &rhs) const;
 
     // Magnitud y magnitud al cuadrado
     float Magnitude () const;
@@ -74,8 +74,8 @@ public:
     Vector4D Normalized () const;
 
     // Distancia y distancia cuadrada
-    static float Distance(const Vector3D &vecA, const Vector4D &vecB);
-    static float SquareDistance(const Vector3D &vecA, const Vector4D &vecB);
+    static float Distance(const Vector4D &vecA, const Vector4D &vecB);
+    static float SquareDistance(const Vector4D &vecA, const Vector4D &vecB);
 
     // Conversión a Vector3D
     Vector3D ToVector3D() const;

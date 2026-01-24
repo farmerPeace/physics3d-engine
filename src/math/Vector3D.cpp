@@ -69,7 +69,11 @@ float &Vector3D::operator [] (int index) {
 
 // Producto punto y producto cruz
 float Vector3D::Dot3D (const Vector3D &rhs) const {
-    return x_ * rhs.x_ + y_ * rhs.y_ + z_ * rhs.z_;
+    return (
+        x_ * rhs.x_ +
+        y_ * rhs.y_ +
+        z_ * rhs.z_
+    );
 }
 
 Vector3D Vector3D::Cross3D(const Vector3D &rhs) const {
