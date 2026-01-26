@@ -73,51 +73,6 @@ Vector4D Vector4D::operator - (const Vector4D &rhs) const {
     return Vector4D(x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_, w_ - rhs.w_);
 }
 
-// Operadres multiplicacion y division con escalar in place
-Vector4D &Vector4D::operator *= (const float &scalar) {
-    x_ *= static_cast<float>(scalar);
-    y_ *= static_cast<float>(scalar);
-    z_ *= static_cast<float>(scalar);
-    w_ *= static_cast<float>(scalar);
-
-    return *this;
-}
-
-Vector4D &Vector4D::operator /= (const float &scalar) {
-    const float scalar_f = static_cast<float>(scalar);
-
-    if (std::abs(scalar_f) < EPSILON) {
-        throw std::domain_error("Division por (casi) cero en un Vector4D");
-    }
-
-    const float inv = 1.0f / scalar_f;
-
-    x_ *= inv;
-    y_ *= inv;
-    z_ *= inv;
-    w_ *= inv;
-
-    return *this;
-}
-
-// Operadores multiplicacion y division con escalar 
-Vector4D Vector4D::operator * (const float &scalar) const {
-    return Vector4D(x_ * scalar, y_ * scalar, z_ * scalar, w_ * scalar);
-}
-
-Vector4D Vector4D::operator / (const float &scalar) const {
-
-    const float scalar_f = static_cast<float>(scalar);
-
-    if (std::abs(scalar_f) < EPSILON) {
-        throw std::domain_error("Division por (casi) cero en un Vector4D");
-    }
-
-    const float inv = 1.0f / scalar_f;
-
-    return Vector4D(x_ * inv, y_ * inv, z_ * inv, w_ * inv);
-}
-
 // Negativo
 Vector4D Vector4D::operator - () const {
     return Vector4D(-x_, -y_, -z_, -w_);

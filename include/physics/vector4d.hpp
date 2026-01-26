@@ -1,6 +1,8 @@
 #pragma once
+
 #include "physics/vector3d.hpp"
 #include <type_traits>
+#include <stdexcept>
 
 class Vector4D {
 private:
@@ -40,12 +42,16 @@ public:
     Vector4D operator - (const Vector4D &rhs) const;
 
     // Operadores multiplicación y división con escalar in place
-    Vector4D &operator *= (const float &scalar);
-    Vector4D &operator /= (const float &scalar);
+    template <typename Scalar>
+    Vector4D &operator *= (const Scalar &scalar);
+    template <typename Scalar>
+    Vector4D &operator /= (const Scalar &scalar);
 
     // Operadores multiplicacion y division con escalar
-    Vector4D operator * (const float &scalar) const;
-    Vector4D operator / (const float &scalar) const;
+    template <typename Scalar>
+    Vector4D operator * (const Scalar &scalar) const;
+    template <typename Scalar>
+    Vector4D operator / (const Scalar &scalar) const;
 
     // Operador de negacion
     Vector4D operator - () const;
@@ -90,3 +96,5 @@ public:
     const float *Data () const;
     float *Data ();
 };
+
+#include "vector4d.inl"

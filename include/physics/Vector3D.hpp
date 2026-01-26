@@ -74,4 +74,4 @@ Vector3D operator * (Vector3D vect, const Scalar &scalar);
 template <typename Scalar>
 Vector3D operator / (Vector3D vect, const Scalar &scalar);
 
-#include "Vector3D.inl"
+#include "vector3d.inl"
