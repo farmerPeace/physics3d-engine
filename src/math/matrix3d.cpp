@@ -419,19 +419,19 @@ bool Matrix3D::IsIdentity () const {
 }
 
 bool Matrix3D::IsZero () const {
-    return (
-        matrix[0] == 0 && matrix[3] == 0 && matrix[6] == 0 &&
-        matrix[1] == 0 && matrix[4] == 0 && matrix[7] == 0 &&
-        matrix[2] == 0 && matrix[5] == 0 && matrix[8] == 0
-    );
-}
-
-bool Matrix3D::IsSymmetric () const {
     const float EPSILON = 1e-6f;
     for (int i = 0; i < 9; i++) {
         if (std::abs(matrix[i]) >= EPSILON) return false;
     }
     return true;
+}
+
+bool Matrix3D::IsSymmetric () const {
+    return (
+        matrix[1] == matrix[3] &&
+        matrix[2] == matrix[6] &&
+        matrix[5] == matrix[7]
+    );
 }
 
 bool Matrix3D::IsOrthogonal() const {
