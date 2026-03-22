@@ -80,6 +80,6 @@ public:
     bool operator != (const Quaternion &rhs) const;
 
     // Exponencial y logaritmo
-    float exponencial () const;
-    float log () const;
+    Quaternion exponential () const;
+    Quaternion logarithm () const;
 };

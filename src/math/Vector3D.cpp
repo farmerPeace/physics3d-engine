@@ -4,6 +4,7 @@
 // Constructores
 Vector3D::Vector3D(): x_(0), y_(0), z_(0) {}
 Vector3D::Vector3D(float x, float y, float z): x_(x), y_(y), z_(z) {}
+Vector3D::Vector3D(const float arr[3]): x_(arr[0]), y_(arr[1]), z_(arr[2]) {}
 
 // Getters
 float Vector3D::x() const { return x_; }
@@ -45,7 +46,10 @@ Vector3D Vector3D::operator - () const {
 
 // Operadores de comparación
 bool Vector3D::operator == (const Vector3D &rhs) const {
-    return x_ == rhs.x_ && y_ == rhs.y_ && z_ == rhs.z_;
+    const float EPS = 1e-6f;
+    return std::abs(x_ - rhs.x_) <= EPS &&
+           std::abs(y_ - rhs.y_) <= EPS &&
+           std::abs(z_ - rhs.z_) <= EPS;
 }
 
 bool Vector3D::operator != (const Vector3D &rhs) const {

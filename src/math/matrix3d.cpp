@@ -427,10 +427,11 @@ bool Matrix3D::IsZero () const {
 }
 
 bool Matrix3D::IsSymmetric () const {
+    const float EPSILON = 1e-6f;
     return (
-        matrix[1] == matrix[3] &&
-        matrix[2] == matrix[6] &&
-        matrix[5] == matrix[7]
+        std::abs(matrix[1] - matrix[3]) < EPSILON &&
+        std::abs(matrix[2] - matrix[6]) < EPSILON &&
+        std::abs(matrix[5] - matrix[7]) < EPSILON
     );
 }
 
