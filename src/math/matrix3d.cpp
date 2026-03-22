@@ -353,59 +353,70 @@ bool Matrix3D::IsInvertible () const {
 
 Matrix3D Matrix3D::Inverted() const {
     
-    const float EPSILON = 1e-6f;
+        const float EPSILON = 1e-6f;
     float det = Determinant();
-    if (std::abs(det) < EPSILON) {
+    if (std::abs(det) < EPSILON)
         throw std::runtime_error("Matriz no invertible: el determinante es cero");
-    }
-    
+ 
     float invDet = 1.0f / det;
-    
+ 
+    // Layout column-major. Alias para claridad:
+    //   a = matrix[0]   b = matrix[3]   c = matrix[6]
+    //   d = matrix[1]   e = matrix[4]   f = matrix[7]
+    //   g = matrix[2]   h = matrix[5]   i = matrix[8]
+    //
+    // La inversa es (1/det) * adj(M), donde adj(M) = C^T
+    // (C = matriz de cofactores).  result(row,col) = cofactor(col,row)/det
+    // almacenado en result.matrix[col*3+row].
+ 
     Matrix3D result;
-    
-    // Calcular matriz de cofactores
-    result.matrix[0] = (matrix[4]*matrix[8] - matrix[5]*matrix[7]) * invDet;
-    result.matrix[3] = (matrix[2]*matrix[7] - matrix[1]*matrix[8]) * invDet;
-    result.matrix[6] = (matrix[1]*matrix[5] - matrix[2]*matrix[4]) * invDet;
-    
-    result.matrix[1] = (matrix[5]*matrix[6] - matrix[3]*matrix[8]) * invDet;
-    result.matrix[4] = (matrix[0]*matrix[8] - matrix[2]*matrix[6]) * invDet;
-    result.matrix[7] = (matrix[2]*matrix[3] - matrix[0]*matrix[5]) * invDet;
-    
-    result.matrix[2] = (matrix[3]*matrix[7] - matrix[4]*matrix[6]) * invDet;
-    result.matrix[5] = (matrix[1]*matrix[6] - matrix[0]*matrix[7]) * invDet;
-    result.matrix[8] = (matrix[0]*matrix[4] - matrix[1]*matrix[3]) * invDet;
-    
+ 
+    // Columna 0 del resultado
+    result.matrix[0] = (matrix[4]*matrix[8] - matrix[5]*matrix[7]) * invDet; // e*i - h*f
+    result.matrix[1] = (matrix[7]*matrix[2] - matrix[1]*matrix[8]) * invDet; // f*g - d*i
+    result.matrix[2] = (matrix[1]*matrix[5] - matrix[4]*matrix[2]) * invDet; // d*h - e*g
+ 
+    // Columna 1 del resultado
+    result.matrix[3] = (matrix[6]*matrix[5] - matrix[3]*matrix[8]) * invDet; // c*h - b*i
+    result.matrix[4] = (matrix[0]*matrix[8] - matrix[6]*matrix[2]) * invDet; // a*i - c*g
+    result.matrix[5] = (matrix[3]*matrix[2] - matrix[0]*matrix[5]) * invDet; // b*g - a*h
+ 
+    // Columna 2 del resultado
+    result.matrix[6] = (matrix[3]*matrix[7] - matrix[6]*matrix[4]) * invDet; // b*f - c*e
+    result.matrix[7] = (matrix[6]*matrix[1] - matrix[0]*matrix[7]) * invDet; // c*d - a*f
+    result.matrix[8] = (matrix[0]*matrix[4] - matrix[3]*matrix[1]) * invDet; // a*e - b*d
+ 
     return result;
 }
 
 Matrix3D& Matrix3D::Invert() {
     const float EPSILON = 1e-6f;
     float det = Determinant();
-    if (std::abs(det) < EPSILON) {
+    if (std::abs(det) < EPSILON)
         throw std::runtime_error("Matriz no invertible: el determinante es cero");
-    }
-    
+ 
     float invDet = 1.0f / det;
-    
-    // Guardar valores originales
-    float m00 = matrix[0], m01 = matrix[1], m02 = matrix[2];
-    float m10 = matrix[3], m11 = matrix[4], m12 = matrix[5];
-    float m20 = matrix[6], m21 = matrix[7], m22 = matrix[8];
-    
-    // Calcular directamente sobre la matriz
-    matrix[0] = (m11*m22 - m12*m21) * invDet;
-    matrix[3] = (m02*m21 - m01*m22) * invDet;
-    matrix[6] = (m01*m12 - m02*m11) * invDet;
-    
-    matrix[1] = (m12*m20 - m10*m22) * invDet;
-    matrix[4] = (m00*m22 - m02*m20) * invDet;
-    matrix[7] = (m02*m10 - m00*m12) * invDet;
-    
-    matrix[2] = (m10*m21 - m11*m20) * invDet;
-    matrix[5] = (m01*m20 - m00*m21) * invDet;
-    matrix[8] = (m00*m11 - m01*m10) * invDet;
-    
+ 
+    // Guardar valores originales antes de sobreescribir
+    const float a = matrix[0], b = matrix[3], c = matrix[6];
+    const float d = matrix[1], e = matrix[4], f = matrix[7];
+    const float g = matrix[2], h = matrix[5], i = matrix[8];
+ 
+    // Columna 0
+    matrix[0] = (e*i - h*f) * invDet;
+    matrix[1] = (f*g - d*i) * invDet;
+    matrix[2] = (d*h - e*g) * invDet;
+ 
+    // Columna 1
+    matrix[3] = (c*h - b*i) * invDet;
+    matrix[4] = (a*i - c*g) * invDet;
+    matrix[5] = (b*g - a*h) * invDet;
+ 
+    // Columna 2
+    matrix[6] = (b*f - c*e) * invDet;
+    matrix[7] = (c*d - a*f) * invDet;
+    matrix[8] = (a*e - b*d) * invDet;
+ 
     return *this;
 }
 
