@@ -2,8 +2,8 @@
 #include <stdexcept>
 #include <limits>
 
-#include "physics/vector4d.hpp"
-#include "physics/vector3d.hpp"
+#include "physics/math/vector4d.hpp"
+#include "physics/math/vector3d.hpp"
 
 #define EPSILON 1e-6f
 
@@ -132,6 +132,9 @@ Vector4D &Vector4D::Normalize () {
 
     const float sq_mag = x_ * x_ + y_ * y_ + z_ * z_;
 
+    // Solo se normalizan los componentes espaciales (x, y, z).
+    // w se fuerza a 0 para preservar la semántica de dirección en
+    // coordenadas homogéneas.
     if (sq_mag > EPSILON) {
         const float inv_mag = 1.0f / std::sqrt(sq_mag);
         x_ *= inv_mag;

@@ -1,4 +1,4 @@
-#include "physics/matrix3d.hpp"
+#include "physics/math/matrix3d.hpp"
 #include <cmath>
 #include <cstring>
 #include <iostream>
@@ -298,6 +298,18 @@ Matrix3D &Matrix3D::operator*=(const Matrix3D &rhs) {
     return *this;
 }
 
+float Matrix3D::Trace() const {
+    return matrix[0] + matrix[4] + matrix[8];
+}
+
+Vector3D Matrix3D::operator*(const Vector3D &vec) const {
+    return Vector3D (
+        matrix[0] * vec.x() + matrix[3] * vec.y() + matrix[6] * vec.z(),
+        matrix[1] * vec.x() + matrix[4] * vec.y() + matrix[7] * vec.z(),
+        matrix[2] * vec.x() + matrix[5] * vec.y() + matrix[8] * vec.z()
+    );
+}
+
 bool Matrix3D::operator == (const Matrix3D &rhs) const {
     const float EPSILON = 1e-6f;
     for (int i = 0; i < 9; i++) {
@@ -344,8 +356,7 @@ Matrix3D Matrix3D::Inverted() const {
     const float EPSILON = 1e-6f;
     float det = Determinant();
     if (std::abs(det) < EPSILON) {
-        std::cerr << "Matriz no invertible" << std::endl;
-        assert(false);
+        throw std::runtime_error("Matriz no invertible: el determinante es cero");
     }
     
     float invDet = 1.0f / det;
@@ -372,8 +383,7 @@ Matrix3D& Matrix3D::Invert() {
     const float EPSILON = 1e-6f;
     float det = Determinant();
     if (std::abs(det) < EPSILON) {
-        std::cerr << "Matriz no invertible" << std::endl;
-        assert(false);
+        throw std::runtime_error("Matriz no invertible: el determinante es cero");
     }
     
     float invDet = 1.0f / det;
@@ -400,10 +410,11 @@ Matrix3D& Matrix3D::Invert() {
 }
 
 bool Matrix3D::IsIdentity () const {
+    const float EPSILON = 1e-6f;
     return (
-        matrix[0] == 1 && matrix[3] == 0 && matrix[6] == 0 &&
-        matrix[1] == 0 && matrix[4] == 1 && matrix[7] == 0 &&
-        matrix[2] == 0 && matrix[5] == 0 && matrix[8] == 1
+        std::abs(matrix[0] - 1.0f) < EPSILON && std::abs(matrix[3]) < EPSILON && std::abs(matrix[6]) < EPSILON &&
+        std::abs(matrix[1]) < EPSILON && std::abs(matrix[4] - 1.0f) < EPSILON && std::abs(matrix[7]) < EPSILON &&
+        std::abs(matrix[2]) < EPSILON && std::abs(matrix[5]) < EPSILON && std::abs(matrix[8] - 1.0f) < EPSILON
     );
 }
 
@@ -416,11 +427,11 @@ bool Matrix3D::IsZero () const {
 }
 
 bool Matrix3D::IsSymmetric () const {
-    return (
-        matrix[1] == matrix[3] &&
-        matrix[2] == matrix[6] &&
-        matrix[5] == matrix[7]
-    );
+    const float EPSILON = 1e-6f;
+    for (int i = 0; i < 9; i++) {
+        if (std::abs(matrix[i]) >= EPSILON) return false;
+    }
+    return true;
 }
 
 bool Matrix3D::IsOrthogonal() const {

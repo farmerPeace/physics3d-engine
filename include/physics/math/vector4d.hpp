@@ -1,6 +1,6 @@
 #pragma once
 
-#include "physics/vector3d.hpp"
+#include "physics/math/vector3d.hpp"
 #include <type_traits>
 #include <stdexcept>
 

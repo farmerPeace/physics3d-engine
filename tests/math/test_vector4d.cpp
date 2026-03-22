@@ -2,8 +2,8 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
-#include "physics/vector4d.hpp"
-#include "physics/vector3d.hpp"
+#include "physics/math/vector4d.hpp"
+#include "physics/math/vector3d.hpp"
 
 const float TEST_EPSILON = 1e-5f;
 

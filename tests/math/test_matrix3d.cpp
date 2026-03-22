@@ -1,4 +1,4 @@
-#include "physics/matrix3d.hpp"
+#include "physics/math/matrix3d.hpp"
 #include <cassert>
 #include <iostream>
 #include <cmath>

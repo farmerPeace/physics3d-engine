@@ -1,4 +1,4 @@
-#include "physics/vector3d.hpp"
+#include "physics/math/vector3d.hpp"
 #include <cassert>
 #include <iostream>
 
