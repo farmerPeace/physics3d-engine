@@ -29,3 +29,4 @@ example_vector3d
 # Temporales
 *.tmp
 *.log
+*.txt

@@ -39,7 +39,7 @@ if (BUILD_TESTS)
 
     add_executable(test_vector4d tests/math/test_vector4d.cpp)
     target_link_libraries(test_vector4d physics)
-    add_test(NAME matrix4d_test COMMAND test_matrix4d)
+    add_test(NAME vector4d_test COMMAND test_vector4d)
 endif()
 
 # Ejemplos
