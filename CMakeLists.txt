@@ -17,6 +17,7 @@ add_library(physics
     src/math/vector3d.cpp 
     src/math/matrix3d.cpp
     src/math/vector4d.cpp
+    src/math/matrix4d.cpp
     )
 
 # Headers
@@ -40,6 +41,10 @@ if (BUILD_TESTS)
     add_executable(test_vector4d tests/math/test_vector4d.cpp)
     target_link_libraries(test_vector4d physics)
     add_test(NAME vector4d_test COMMAND test_vector4d)
+
+    add_executable(test_matrix4d tests/math/test_matrix4d.cpp)
+    target_link_libraries(test_matrix4d physics)
+    add_test(NAME matrix4d_test COMMAND test_matrix4d)
 endif()
 
 # Ejemplos
