@@ -69,7 +69,7 @@ public:
  
     // Conversiones
     Matrix3D ToRotationMatrix () const;
-    // Matrix4D ToTransformMatrix () const;
+    Matrix4D ToTransformMatrix () const;
     Vector3D ToEulerAngles () const;
     void ToAxisAngle (Vector3D &axis, float &angle) const;
 
@@ -88,7 +88,7 @@ public:
     // Metodos estaticos
     static Quaternion Identity();
     static Quaternion FromAxisAngle(const Vector3D &axis, float angle);
-    static Quaternion FromEulerAngles(float roll, float pitch, float yaw);
+    static Quaternion FromEulerAngles(float pitch, float yaw, float roll);
     static Quaternion FromRotationMatrix(const Matrix3D &m);
 };
 

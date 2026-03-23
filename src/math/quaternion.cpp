@@ -27,7 +27,7 @@ Quaternion Quaternion::FromAxisAngle(const Vector3D &axis, float angle) {
     return Quaternion(cos, norm_axis.x() * sin, norm_axis.y() * sin, norm_axis.z() * sin);
 }
 
-Quaternion Quaternion::FromEulerAngles(float roll, float pitch, float yaw) {
+Quaternion Quaternion::FromEulerAngles(float pitch, float yaw, float roll) {
     // X -> Pitch, Y -> Yaw, Z -> Roll
     const float half_pitch = pitch * 0.5f;
     const float half_yaw = yaw * 0.5f;
