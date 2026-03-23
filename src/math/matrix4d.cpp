@@ -577,23 +577,25 @@ bool Matrix4D::IsZero() const {
 }
  
 bool Matrix4D::IsOrthogonal() const {
-    // Una matriz 4×4 es ortogonal si M * M^T = I
-    // Verificamos solo la submatriz 3×3 superior (la parte de rotación/escala)
-    for (int col = 0; col < 3; ++col) {
-        // Cada columna 3D debe ser unitaria
+    // M es ortogonal si M * M^T = I, es decir:
+    // - cada columna tiene magnitud 1
+    // - columnas distintas son ortogonales entre sí
+    // Se verifican las 4 columnas completas, no solo la submatriz 3×3,
+    // para que matrices de traslación (cuya 4ª columna no es unitaria
+    // en el sentido 4D) devuelvan false correctamente.
+    for (int col = 0; col < 4; ++col) {
         float dot = 0.0f;
-        for (int row = 0; row < 3; ++row) {
+        for (int row = 0; row < 4; ++row) {
             const float v = matrix[col * 4 + row];
             dot += v * v;
         }
         if (std::abs(dot - 1.0f) > EPSILON) return false;
     }
  
-    // Columnas 3D deben ser mutuamente ortogonales
-    for (int i = 0; i < 3; ++i) {
-        for (int j = i + 1; j < 3; ++j) {
+    for (int i = 0; i < 4; ++i) {
+        for (int j = i + 1; j < 4; ++j) {
             float dot = 0.0f;
-            for (int row = 0; row < 3; ++row) {
+            for (int row = 0; row < 4; ++row) {
                 dot += matrix[i * 4 + row] * matrix[j * 4 + row];
             }
             if (std::abs(dot) > EPSILON) return false;

@@ -28,20 +28,26 @@ Quaternion Quaternion::FromAxisAngle(const Vector3D &axis, float angle) {
 }
 
 Quaternion Quaternion::FromEulerAngles(float pitch, float yaw, float roll) {
-    // X -> Pitch, Y -> Yaw, Z -> Roll
+    // Ejes: X → pitch, Y → yaw, Z → roll
+    // Composición: q = Rz(roll) * Ry(yaw) * Rx(pitch)
+    // Derivada analítica de q_z * (q_y * q_x):
+    //   w =  cr·cy·cp + sr·sy·sp
+    //   x =  cr·cy·sp − sr·sy·cp
+    //   y =  cr·sy·cp + sr·cy·sp
+    //   z =  sr·cy·cp − cr·sy·sp
     const float half_pitch = pitch * 0.5f;
-    const float half_yaw = yaw * 0.5f;
-    const float half_roll = roll * 0.5f;
-
+    const float half_yaw = yaw   * 0.5f;
+    const float half_roll = roll  * 0.5f;
+ 
     const float cos_pitch = std::cos(half_pitch), sin_pitch = std::sin(half_pitch);
     const float cos_yaw = std::cos(half_yaw), sin_yaw = std::sin(half_yaw);
     const float cos_roll = std::cos(half_roll), sin_roll = std::sin(half_roll);
-
+ 
     return Quaternion(
-        cos_roll * cos_pitch * cos_yaw + sin_roll * sin_pitch * sin_yaw,
-        cos_roll * sin_pitch * cos_yaw + sin_roll * cos_pitch * sin_yaw,
-        cos_roll * cos_pitch * sin_yaw - sin_roll * sin_pitch * cos_yaw,
-        sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw
+        cos_roll * cos_yaw * cos_pitch + sin_roll * sin_yaw * sin_pitch,
+        cos_roll * cos_yaw * sin_pitch - sin_roll * sin_yaw * cos_pitch,
+        cos_roll * sin_yaw * cos_pitch + sin_roll * cos_yaw * sin_pitch,
+        sin_roll * cos_yaw * cos_pitch - cos_roll * sin_yaw * sin_pitch
     );
 }
 
@@ -380,24 +386,29 @@ Matrix4D Quaternion::ToTransformMatrix () const {
 }
  
 Vector3D Quaternion::ToEulerAngles () const {
-    Quaternion n = Normalized();
- 
-    const float w = n.w_, x = n.x_, y = n.y_, z = n.z_;
- 
-    // Pitch (X)
-    const float sin_pitch = 2.0f * (w * x + y * z);
-    const float cos_pitch = 1.0f - 2.0f * (x * x + y * y);
+    // Extraer ángulos de Euler de la composición q = q_z * q_y * q_x
+    // Usamos la matriz de rotación para una extracción más confiable
+    Matrix3D R = ToRotationMatrix();
+    
+    // Para la composición R = R_z(roll) * R_y(yaw) * R_x(pitch):
+    // yaw = asin(-R[2,0]) cuando cos(yaw) != 0
+    // Luego usar arctangent para los otros ángulos
+    
+    // Pitch: extraer de R[2,1] y R[2,2]
+    const float sin_pitch = R(2, 1);
+    const float cos_pitch = R(2, 2);
     const float pitch = std::atan2(sin_pitch, cos_pitch);
- 
-    // Yaw (Y) — clamp para evitar NaN en el dominio de asin
-    const float sin_yaw = 2.0f * (w * y - z * x);
-    const float yaw = std::asin(std::max(-1.0f, std::min(1.0f, sin_yaw)));
- 
-    // Roll (Z)
-    const float sin_roll = 2.0f * (w * z + x * y);
-    const float cos_roll = 1.0f - 2.0f * (y * y + z * z);
+    
+    // Yaw: extraer de R[0,0], R[1,0] y R[2,0]
+    const float sin_yaw = -R(2, 0);
+    const float cos_yaw = std::sqrt(R(0, 0) * R(0, 0) + R(1, 0) * R(1, 0));
+    const float yaw = std::atan2(sin_yaw, cos_yaw);
+    
+    // Roll: extraer de R[1,0] y R[0,0]
+    const float sin_roll = R(1, 0) / (cos_yaw + EPSILON);
+    const float cos_roll = R(0, 0) / (cos_yaw + EPSILON);
     const float roll = std::atan2(sin_roll, cos_roll);
- 
+    
     return Vector3D(pitch, yaw, roll);
 }
  
