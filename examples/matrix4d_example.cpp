@@ -10,7 +10,7 @@
 const float PI = 3.14159265358979323846f;
 
 // ─────────────────────────────────────────────
-// Utilidades de impresión
+// Utilidades de impresion
 // ─────────────────────────────────────────────
 
 void printMatrix(const std::string& name, const Matrix4D& m) {
@@ -50,7 +50,7 @@ void example1_constructors_and_special_matrices() {
     Matrix4D id_default;
     printMatrix("Constructor por defecto (identidad)", id_default);
 
-    // Matrices especiales estáticas
+    // Matrices especiales estaticas
     Matrix4D id = Matrix4D::Identity();
     Matrix4D zero = Matrix4D::Zero();
     printMatrix("Identity()", id);
@@ -68,12 +68,12 @@ void example1_constructors_and_special_matrices() {
     );
     printMatrix("Constructor 16 floats (fila-mayor)", m16);
 
-    // Constructor desde Matrix3D (solo rotación, sin traslación)
+    // Constructor desde Matrix3D (solo rotacion, sin traslacion)
     Matrix3D rot3 = Matrix3D::RotationZ(PI / 4.0f);
     Matrix4D m_from_rot(rot3);
     printMatrix("Desde Matrix3D (RotacionZ 45°)", m_from_rot);
 
-    // Constructor desde Matrix3D + traslación
+    // Constructor desde Matrix3D + traslacion
     Vector3D traslacion(3.0f, 5.0f, 7.0f);
     Matrix4D m_trs(rot3, traslacion);
     printMatrix("Desde Matrix3D + traslacion (3, 5, 7)", m_trs);
@@ -82,15 +82,15 @@ void example1_constructors_and_special_matrices() {
 }
 
 // ─────────────────────────────────────────────
-// EJEMPLO 2: Transformaciones básicas
+// EJEMPLO 2: Transformaciones basicas
 // ─────────────────────────────────────────────
 
 void example2_basic_transforms() {
     std::cout << "========================================\n";
-    std::cout << "EJEMPLO 2: Transformaciones Básicas\n";
+    std::cout << "EJEMPLO 2: Transformaciones Basicas\n";
     std::cout << "========================================\n\n";
 
-    // Traslación
+    // Traslacion
     Matrix4D T = Matrix4D::Translation(4.0f, 2.0f, -3.0f);
     printMatrix("Traslacion (4, 2, -3)", T);
 
@@ -116,7 +116,7 @@ void example2_basic_transforms() {
     std::cout << "Rz es ortogonal? " << (Rz.IsOrthogonal() ? "SI" : "NO") << "\n";
     std::cout << "T  es ortogonal? " << (T.IsOrthogonal()  ? "SI" : "NO") << "\n\n";
 
-    // Rotación alrededor de eje arbitrario
+    // Rotacion alrededor de eje arbitrario
     Vector3D eje_diagonal(1.0f, 1.0f, 0.0f);
     Matrix4D R_eje = Matrix4D::Rotation(PI / 3.0f, eje_diagonal.Normalized());
     printMatrix("Rotation(60°, eje (1,1,0))", R_eje);
@@ -128,7 +128,7 @@ void example2_basic_transforms() {
 
 void example3_trs() {
     std::cout << "========================================\n";
-    std::cout << "EJEMPLO 3: TRS (Traslación × Rotación × Escala)\n";
+    std::cout << "EJEMPLO 3: TRS (Traslacion × Rotacion × Escala)\n";
     std::cout << "========================================\n\n";
 
     Vector3D posicion(10.0f, 5.0f, -2.0f);
@@ -146,13 +146,13 @@ void example3_trs() {
     std::cout << "Magnitud columna 0 (escala X = 2): " << mag_col0 << "\n\n";
 
     // Transformar un punto con TRS
-    Vector4D punto_local(1.0f, 0.0f, 0.0f, 1.0f);  // w=1 → punto
+    Vector4D punto_local(1.0f, 0.0f, 0.0f, 1.0f);  // w=1 -> punto
     Vector4D punto_mundo = trs * punto_local;
     printVector4("Punto local  (1, 0, 0, 1)", punto_local);
     printVector4("Punto mundo  (despues de TRS)", punto_mundo);
     std::cout << "\n";
 
-    // Transformar una dirección (w=0, la traslación no afecta)
+    // Transformar una direccion (w=0, la traslacion no afecta)
     Vector4D dir_local(1.0f, 0.0f, 0.0f, 0.0f);
     Vector4D dir_mundo = trs * dir_local;
     printVector4("Direccion local  (1, 0, 0, 0)", dir_local);
@@ -161,12 +161,12 @@ void example3_trs() {
 }
 
 // ─────────────────────────────────────────────
-// EJEMPLO 4: Operaciones aritméticas
+// EJEMPLO 4: Operaciones aritmeticas
 // ─────────────────────────────────────────────
 
 void example4_arithmetic() {
     std::cout << "========================================\n";
-    std::cout << "EJEMPLO 4: Operaciones Aritméticas\n";
+    std::cout << "EJEMPLO 4: Operaciones Aritmeticas\n";
     std::cout << "========================================\n\n";
 
     Matrix4D A = Matrix4D::Scale(2.0f, 3.0f, 4.0f);
@@ -188,7 +188,7 @@ void example4_arithmetic() {
     Matrix4D div = scaled / 2.0f;
     std::cout << "(A * 2) / 2 == A? " << (div == A ? "SI" : "NO") << "\n\n";
 
-    // Negación
+    // Negacion
     Matrix4D neg = -A;
     printMatrix("-A", neg);
 
@@ -199,16 +199,16 @@ void example4_arithmetic() {
 }
 
 // ─────────────────────────────────────────────
-// EJEMPLO 5: Multiplicación de matrices y transformación de vectores
+// EJEMPLO 5: Multiplicacion de matrices y transformacion de vectores
 // ─────────────────────────────────────────────
 
 void example5_matrix_multiply_and_transform() {
     std::cout << "========================================\n";
-    std::cout << "EJEMPLO 5: Multiplicación de Matrices y Transformación de Vectores\n";
+    std::cout << "EJEMPLO 5: Multiplicacion de Matrices y Transformacion de Vectores\n";
     std::cout << "========================================\n\n";
 
-    // Composición: primero escala, luego traslada
-    // El orden de multiplicación es: T * S (S se aplica primero)
+    // Composicion: primero escala, luego traslada
+    // El orden de multiplicacion es: T * S (S se aplica primero)
     Matrix4D T = Matrix4D::Translation(5.0f, 0.0f, 0.0f);
     Matrix4D S = Matrix4D::Scale(2.0f, 2.0f, 2.0f);
     Matrix4D TS = T * S;
@@ -298,14 +298,14 @@ void example7_determinant_and_inverse() {
     Matrix4D S = Matrix4D::Scale(2.0f, 3.0f, 4.0f);
     std::cout << "det(Scale(2,3,4)) = " << S.Determinant()            << " (esperado 24)\n\n";
 
-    // Inversa de traslación
+    // Inversa de traslacion
     Matrix4D T  = Matrix4D::Translation(3.0f, -5.0f, 1.0f);
     Matrix4D Ti = T.Inverted();
     printMatrix("T (Traslacion 3,-5,1)", T);
     printMatrix("T^-1", Ti);
     std::cout << "T * T^-1 == I? " << ((T * Ti).IsIdentity() ? "SI" : "NO") << "\n\n";
 
-    // Inversa de rotación: para matrices ortogonales, inversa = transpuesta
+    // Inversa de rotacion: para matrices ortogonales, inversa = transpuesta
     Matrix4D R  = Matrix4D::RotationX(PI / 5.0f);
     Matrix4D Ri = R.Inverted();
     std::cout << "R^-1 == R^T? " << (Ri == R.Transposed() ? "SI" : "NO") << "\n\n";
@@ -348,12 +348,12 @@ void example8_column_row_and_submatrix() {
     }
     std::cout << "\n";
 
-    // Submatriz 3×3 (bloque de rotación/escala)
+    // Submatriz 3×3 (bloque de rotacion/escala)
     Matrix3D rot_extraida = m.GetUpper3x3();
     std::cout << "Upper3x3 == rot3 original? "
               << (rot_extraida == rot3 ? "SI" : "NO") << "\n";
 
-    // Traslación
+    // Traslacion
     Vector3D t_extraida = m.GetTranslation();
     printVector3("GetTranslation()", t_extraida);
     std::cout << "\n";
@@ -363,24 +363,24 @@ void example8_column_row_and_submatrix() {
     m2.SetColumn(3, Vector4D(100.0f, 200.0f, 300.0f, 1.0f));
     printVector3("SetColumn(3, ...) -> nueva traslacion", m2.GetTranslation());
 
-    // Modificar traslación directamente
+    // Modificar traslacion directamente
     m2.SetTranslation(Vector3D(-1.0f, -2.0f, -3.0f));
     printVector3("SetTranslation(-1,-2,-3)", m2.GetTranslation());
     std::cout << "\n";
 }
 
 // ─────────────────────────────────────────────
-// EJEMPLO 9: Proyecciones (Perspectiva y Ortográfica)
+// EJEMPLO 9: Proyecciones (Perspectiva y Ortografica)
 // ─────────────────────────────────────────────
 
 void example9_projection_matrices() {
     std::cout << "========================================\n";
-    std::cout << "EJEMPLO 9: Matrices de Proyección\n";
+    std::cout << "EJEMPLO 9: Matrices de Proyeccion\n";
     std::cout << "========================================\n\n";
 
-    // Proyección perspectiva (convención OpenGL, mano derecha, NDC [-1,1])
+    // Proyeccion perspectiva (convencion OpenGL, mano derecha, NDC [-1,1])
     float fovY   = PI / 2.0f;    // 90° de campo visual vertical
-    float aspect = 16.0f / 9.0f; // Relación 16:9
+    float aspect = 16.0f / 9.0f; // Relacion 16:9
     float near   = 0.1f;
     float far    = 100.0f;
 
@@ -391,17 +391,17 @@ void example9_projection_matrices() {
     std::cout << "m(3,2) == -1? " << (std::abs(P(3,2) + 1.0f) < 1e-5f ? "SI" : "NO")
               << "  (valor: " << P(3,2) << ")\n\n";
 
-    // Proyección ortográfica (2D, interfaz, etc.)
+    // Proyeccion ortografica (2D, interfaz, etc.)
     Matrix4D O = Matrix4D::Orthographic(-8.0f, 8.0f, -4.5f, 4.5f, 0.1f, 100.0f);
     printMatrix("Orthographic(-8,8, -4.5,4.5, near=0.1, far=100)", O);
 
-    // En ortográfica: m(3,3) = 1 y no hay perspectiva (w se conserva)
+    // En ortografica: m(3,3) = 1 y no hay perspectiva (w se conserva)
     std::cout << "m(3,3) == 1? " << (std::abs(O(3,3) - 1.0f) < 1e-5f ? "SI" : "NO")
               << "  (valor: " << O(3,3) << ")\n\n";
 }
 
 // ─────────────────────────────────────────────
-// EJEMPLO 10: LookAt (cámara)
+// EJEMPLO 10: LookAt (camara)
 // ─────────────────────────────────────────────
 
 void example10_lookat() {
@@ -409,20 +409,20 @@ void example10_lookat() {
     std::cout << "EJEMPLO 10: LookAt (Matriz de Vista)\n";
     std::cout << "========================================\n\n";
 
-    Vector3D eye(0.0f, 3.0f, 10.0f);    // posición de la cámara
+    Vector3D eye(0.0f, 3.0f, 10.0f);    // posicion de la camara
     Vector3D target(0.0f, 0.0f, 0.0f);  // punto al que mira
     Vector3D up(0.0f, 1.0f, 0.0f);      // vector "arriba"
 
     Matrix4D V = Matrix4D::LookAt(eye, target, up);
     printMatrix("LookAt(eye=(0,3,10), target=(0,0,0), up=(0,1,0))", V);
 
-    // La vista transforma el ojo al origen del espacio de cámara
+    // La vista transforma el ojo al origen del espacio de camara
     Vector4D eye_h(eye.x(), eye.y(), eye.z(), 1.0f);
     Vector4D eye_en_camara = V * eye_h;
     printVector4("Ojo transformado (debe ser ~(0,0,0,1))", eye_en_camara);
     std::cout << "\n";
 
-    // Pipeline MVP completo: Modelo → Vista → Proyección
+    // Pipeline MVP completo: Modelo -> Vista -> Proyeccion
     Matrix4D M = Matrix4D::TRS(
         Vector3D(2.0f, 0.0f, 0.0f),
         Matrix3D::RotationY(PI / 4.0f),
@@ -441,12 +441,12 @@ void example10_lookat() {
 }
 
 // ─────────────────────────────────────────────
-// EJEMPLO 11: Traza, propiedades e interpolación
+// EJEMPLO 11: Traza, propiedades e interpolacion
 // ─────────────────────────────────────────────
 
 void example11_trace_properties_lerp() {
     std::cout << "========================================\n";
-    std::cout << "EJEMPLO 11: Traza, Propiedades e Interpolación\n";
+    std::cout << "EJEMPLO 11: Traza, Propiedades e Interpolacion\n";
     std::cout << "========================================\n\n";
 
     // Traza
@@ -472,7 +472,7 @@ void example11_trace_properties_lerp() {
     std::cout << "  IsOrthogonal? " << (T.IsOrthogonal() ? "SI" : "NO")
               << "  (columna de traslacion no es unitaria en 4D)\n\n";
 
-    // Interpolación lineal entre matrices
+    // Interpolacion lineal entre matrices
     Matrix4D inicio = Matrix4D::Identity();
     Matrix4D fin    = Matrix4D::Scale(3.0f, 3.0f, 3.0f);
 
@@ -497,16 +497,16 @@ void example11_trace_properties_lerp() {
 }
 
 // ─────────────────────────────────────────────
-// EJEMPLO 12: Aplicaciones prácticas en físicas
+// EJEMPLO 12: Aplicaciones practicas en fisicas
 // ─────────────────────────────────────────────
 
 void example12_practical_physics() {
     std::cout << "========================================\n";
-    std::cout << "EJEMPLO 12: Aplicaciones Prácticas en Físicas\n";
+    std::cout << "EJEMPLO 12: Aplicaciones Practicas en Fisicas\n";
     std::cout << "========================================\n\n";
 
-    // ── 1. Transformar un cuerpo rígido ──────
-    std::cout << "1. Transformación de cuerpo rígido\n";
+    // ── 1. Transformar un cuerpo rigido ──────
+    std::cout << "1. Transformacion de cuerpo rigido\n";
     Vector3D posicion(5.0f, 0.0f, 0.0f);
     Matrix3D orientacion = Matrix3D::RotationY(PI / 6.0f);  // 30° en Y
     Matrix4D world = Matrix4D::TRS(posicion, orientacion, Vector3D(1, 1, 1));
@@ -527,7 +527,7 @@ void example12_practical_physics() {
     printVector4("  Punto local recuperado", de_vuelta);
     std::cout << "\n";
 
-    // ── 3. Cambio de base: local → mundo → cámara ──
+    // ── 3. Cambio de base: local -> mundo -> camara ──
     std::cout << "3. Pipeline de transformaciones: Local -> Mundo -> Camara\n";
     Matrix4D M = world;
     Matrix4D V = Matrix4D::LookAt(
@@ -542,7 +542,7 @@ void example12_practical_physics() {
     Vector4D clip_space = MVP * vertice_local;
     printVector4("  Vertice local  (0, 1, 0, 1)", vertice_local);
     printVector4("  Clip space     (MVP * v)", clip_space);
-    // División de perspectiva (NDC)
+    // Division de perspectiva (NDC)
     if (std::abs(clip_space.w()) > 1e-5f) {
         Vector3D ndc(clip_space.x() / clip_space.w(),
                      clip_space.y() / clip_space.w(),
@@ -551,25 +551,25 @@ void example12_practical_physics() {
     }
     std::cout << "\n";
 
-    // ── 4. Composición de transformaciones de articulaciones ──
-    std::cout << "4. Articulacion: hombro → codo → muneca\n";
+    // ── 4. Composicion de transformaciones de articulaciones ──
+    std::cout << "4. Articulacion: hombro -> codo -> muneca\n";
     Matrix4D hombro = Matrix4D::TRS(
         Vector3D(0.0f, 2.0f, 0.0f),
-        Matrix3D::RotationZ(PI / 6.0f),   // 30° en Z (abducción)
+        Matrix3D::RotationZ(PI / 6.0f),   // 30° en Z (abduccion)
         Vector3D(1, 1, 1)
     );
     Matrix4D codo = Matrix4D::TRS(
         Vector3D(0.0f, -1.5f, 0.0f),      // desplazamiento local desde el hombro
-        Matrix3D::RotationZ(-PI / 4.0f),  // -45° (flexión de codo)
+        Matrix3D::RotationZ(-PI / 4.0f),  // -45° (flexion de codo)
         Vector3D(1, 1, 1)
     );
     Matrix4D muneca = Matrix4D::TRS(
         Vector3D(0.0f, -1.0f, 0.0f),      // desplazamiento local desde el codo
-        Matrix3D::RotationZ(PI / 8.0f),   // 22.5° (leve rotación)
+        Matrix3D::RotationZ(PI / 8.0f),   // 22.5° (leve rotacion)
         Vector3D(1, 1, 1)
     );
 
-    // Posición de la muñeca en espacio mundo = hombro * codo * muneca
+    // Posicion de la muñeca en espacio mundo = hombro * codo * muneca
     Matrix4D muneca_mundo = hombro * codo * muneca;
     Vector3D origen_muneca = muneca_mundo.GetTranslation();
     printVector3("  Posicion de la muneca en espacio mundo", origen_muneca);
