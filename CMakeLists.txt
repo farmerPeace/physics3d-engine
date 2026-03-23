@@ -54,4 +54,7 @@ if (BUILD_EXAMPLES)
 
     add_executable(example_matrix3d examples/matrix3d_example.cpp)
     target_link_libraries(example_matrix3d physics)
+
+    add_executable(example_matrix4d examples/matrix4d_example.cpp)
+    target_link_libraries(example_matrix4d physics)
 endif()
