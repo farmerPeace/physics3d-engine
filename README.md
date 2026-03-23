@@ -19,12 +19,12 @@ La siguiente sección del `README.md` se centra en el progreso del proyecto, las
 	- [x] Vector3D `vector3d`
 	- [x] Vector4D `vector4d`
 	- [x] Matrix3D `matrix3d`
+	- [x] Matrix4D `matrix4d`
+	- [x] Quaternion `quaternion`
 ## 🔄 En progreso
 - [ ] Macros `core/macros`
 - [ ] Configuraciones `core/config`
 - [ ] Tipos `core/types`
-- [ ] Matrix4D `math/matrix4d`
-- [ ] Quaternion `math/quaternion`
 ## ❌ Sin implementar
 - **Matemáticas** `/math`
 	- [ ] Transformaciones `transform`
