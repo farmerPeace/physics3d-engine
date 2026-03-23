@@ -65,4 +65,7 @@ if (BUILD_EXAMPLES)
 
     add_executable(example_matrix4d examples/matrix4d_example.cpp)
     target_link_libraries(example_matrix4d physics)
+
+    add_executable(example_quaternion examples/quaternion_example.cpp)
+    target_link_libraries(example_quaternion physics)
 endif()
