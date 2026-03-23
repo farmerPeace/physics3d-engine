@@ -57,6 +57,9 @@ if (BUILD_EXAMPLES)
     add_executable(example_vector3d examples/vector3d_example.cpp)
     target_link_libraries(example_vector3d physics)
 
+    add_executable(example_vector4d examples/vector4d_example.cpp)
+    target_link_libraries(example_vector4d physics)
+
     add_executable(example_matrix3d examples/matrix3d_example.cpp)
     target_link_libraries(example_matrix3d physics)
 
