@@ -2,12 +2,30 @@
 #include "physics/math/vector3d.hpp"
 #include "physics/math/matrix3d.hpp"
 #include "physics/math/matrix4d.hpp"
+#include "physics/core/config.hpp"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 #include <string>
 
-const float PI = 3.14159265358979323846f;
+/*
+El archivo cubre 14 ejemplos progresivos:
+
+1. Constructores y métodos estáticos (`Identity`, `FromAxisAngle`, `FromEulerAngles`, `FromRotationMatrix`)
+2. Acceso por índice y `Data()` raw
+3. Suma, resta y negación (con nota sobre `q` y `-q`)
+4. Multiplicación/división por escalar e in-place
+5. Multiplicación de cuaterniones y composición de rotaciones
+6. Producto punto, conjugado e inverso
+7. Magnitud, normalización y deriva numérica
+8. Rotación de vectores con propiedades demostradas
+9. `ToAxisAngle` y `ToEulerAngles` con ida y vuelta
+10. Conversión a `Matrix3D` y `Matrix4D`
+11. `Slerp` y `Nlerp` con tabla comparativa
+12. Derivada temporal e integración de orientación
+13. Exponencial, logaritmo y Squad simplificado
+14. Simulación de cuerpo rígido con cámara orbital
+*/
 
 // ---------------------------------------------
 // Utilidades de impresion
@@ -62,17 +80,17 @@ void example1_constructors() {
     printQuat("\nIdentity()", id);
 
     // FromAxisAngle: rotacion de 90° alrededor del eje Y
-    Quaternion q_aa = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI / 2.0f);
+    Quaternion q_aa = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI / 2.0f);
     printQuat("FromAxisAngle(Y, 90°)", q_aa);
     std::cout << "IsUnit? " << (q_aa.IsUnit() ? "SI" : "NO") << "\n";
 
-    // FromEulerAngles(pitch, yaw, roll): equivale a Rz(roll)*Ry(yaw)*Rx(pitch)
-    // Pitch = rotacion en X, Yaw = rotacion en Y, Roll = rotacion en Z
-    Quaternion q_euler = Quaternion::FromEulerAngles(PI / 6.0f, PI / 4.0f, PI / 3.0f);
-    printQuat("\nFromEulerAngles(pitch=30°, yaw=45°, roll=60°)", q_euler);
+    // FromEulerAngles(PHYS_PItch, yaw, roll): equivale a Rz(roll)*Ry(yaw)*Rx(PHYS_PItch)
+    // PHYS_PItch = rotacion en X, Yaw = rotacion en Y, Roll = rotacion en Z
+    Quaternion q_euler = Quaternion::FromEulerAngles(PHYS_PI / 6.0f, PHYS_PI / 4.0f, PHYS_PI / 3.0f);
+    printQuat("\nFromEulerAngles(PHYS_PItch=30°, yaw=45°, roll=60°)", q_euler);
 
     // FromRotationMatrix: construye el cuaternion desde una matriz de rotacion
-    Matrix3D rot_z = Matrix3D::RotationZ(PI / 2.0f);
+    Matrix3D rot_z = Matrix3D::RotationZ(PHYS_PI / 2.0f);
     Quaternion q_from_mat = Quaternion::FromRotationMatrix(rot_z);
     printQuat("\nFromRotationMatrix(RotZ 90°)", q_from_mat);
 }
@@ -154,7 +172,7 @@ void example3_arithmetic() {
     // Nota: -q representa la misma rotacion que q.
     // q y -q codifican identica orientacion porque ambos mapean el
     // mismo arco en la hiperesfera S³.
-    Quaternion q_rot = Quaternion::FromAxisAngle(Vector3D(0, 0, 1), PI / 3.0f);
+    Quaternion q_rot = Quaternion::FromAxisAngle(Vector3D(0, 0, 1), PHYS_PI / 3.0f);
     Quaternion q_neg = -q_rot;
     Vector3D v_prueba(1.0f, 0.0f, 0.0f);
     Vector3D r1 = q_rot.Rotate(v_prueba);
@@ -232,8 +250,8 @@ void example5_quaternion_multiplication() {
 
     // -- Composicion de rotaciones --------------
     // Rotar 90° en X y luego 90° en Y
-    Quaternion qX = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PI / 2.0f);
-    Quaternion qY = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI / 2.0f);
+    Quaternion qX = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PHYS_PI / 2.0f);
+    Quaternion qY = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI / 2.0f);
 
     // qY * qX = "primero X, luego Y"
     Quaternion qYX = qY * qX;
@@ -281,8 +299,8 @@ void example6_dot_conjugate_inverse() {
 
     // El signo del producto punto determina el camino mas corto en Slerp.
     // Si dot < 0, negamos uno de los cuaterniones antes de interpolar.
-    Quaternion q1 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI / 4.0f);
-    Quaternion q2 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), 3.0f * PI / 2.0f);
+    Quaternion q1 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI / 4.0f);
+    Quaternion q2 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), 3.0f * PHYS_PI / 2.0f);
     std::cout << "\nDot(q1, q2) = " << q1.Dot(q2) << "  "
               << (q1.Dot(q2) < 0.0f ? "(caminos opuestos -> se negara q2 en Slerp)" : "(mismo hemisferio)") << "\n";
 
@@ -338,7 +356,7 @@ void example7_magnitude_normalization() {
     std::cout << "Magnitude()       = " << mag    << "  (esperado sqrt(30) ≈ 5.4772)\n";
     std::cout << "SquareMagnitude() = " << sq_mag << "  (esperado 30)\n";
 
-    // Normalized() devuelve copia
+    // Normalized() devuelve PHYS_PIa
     Quaternion n = q.Normalized();
     printQuat("\nNormalized()", n);
     std::cout << "Magnitude del normalizado = " << n.Magnitude() << "  (esperado 1)\n";
@@ -375,7 +393,7 @@ void example7_magnitude_normalization() {
 // La formula  v' = q * v_puro * q⁻¹  rota el vector v.
 // Internamente se usa la optimizacion de Rodrigues para evitar
 // construir el cuaternion puro intermedio.
-// Propiedades garantizadas: preserva longitud, preserva angulo entre vectores.
+// PHYS_PIedades garantizadas: preserva longitud, preserva angulo entre vectores.
 
 void example8_rotate_vector() {
     printSeparator("EJEMPLO 8: Rotacion de Vectores");
@@ -385,9 +403,9 @@ void example8_rotate_vector() {
     Vector3D ey(0.0f, 1.0f, 0.0f);
     Vector3D ez(0.0f, 0.0f, 1.0f);
 
-    Quaternion qX90 = Quaternion::FromAxisAngle(ex, PI / 2.0f);
-    Quaternion qY90 = Quaternion::FromAxisAngle(ey, PI / 2.0f);
-    Quaternion qZ90 = Quaternion::FromAxisAngle(ez, PI / 2.0f);
+    Quaternion qX90 = Quaternion::FromAxisAngle(ex, PHYS_PI / 2.0f);
+    Quaternion qY90 = Quaternion::FromAxisAngle(ey, PHYS_PI / 2.0f);
+    Quaternion qZ90 = Quaternion::FromAxisAngle(ez, PHYS_PI / 2.0f);
 
     // Rx(90°): Y -> Z, Z -> -Y
     printVector3("Rx(90°) * Y  (esperado  Z)", qX90.Rotate(ey));
@@ -401,9 +419,9 @@ void example8_rotate_vector() {
     printVector3("\nRz(90°) * X  (esperado  Y)", qZ90.Rotate(ex));
     printVector3("Rz(90°) * Y  (esperado -X)", qZ90.Rotate(ey));
 
-    // -- Propiedades ----------------------------
+    // -- PHYS_PIedades ----------------------------
     Vector3D v(3.0f, 1.0f, 4.0f);
-    Quaternion q_arb = Quaternion::FromAxisAngle(Vector3D(1, 2, 3).Normalized(), PI / 5.0f);
+    Quaternion q_arb = Quaternion::FromAxisAngle(Vector3D(1, 2, 3).Normalized(), PHYS_PI / 5.0f);
 
     Vector3D v_rot = q_arb.Rotate(v);
     std::cout << "\nRotacion arbitraria de v=(3,1,4):\n";
@@ -420,7 +438,7 @@ void example8_rotate_vector() {
     std::cout << (same ? "SI" : "NO") << "\n";
 
     // -- Rotacion 180° -------------------------
-    Quaternion q180 = Quaternion::FromAxisAngle(ez, PI);
+    Quaternion q180 = Quaternion::FromAxisAngle(ez, PHYS_PI);
     printVector3("\nRz(180°) * X  (esperado -X)", q180.Rotate(ex));
     printVector3("Rz(180°) * Y  (esperado -Y)", q180.Rotate(ey));
     printVector3("Rz(180°) * Z  (esperado  Z)", q180.Rotate(ez));
@@ -430,15 +448,15 @@ void example8_rotate_vector() {
 // EJEMPLO 9: Extraccion de eje y angulo, angulos de Euler
 // ---------------------------------------------
 // ToAxisAngle descompone el cuaternion en su eje y angulo de rotacion.
-// ToEulerAngles retorna Vector3D(pitch, yaw, roll):
-//   pitch = rotacion en X, yaw = rotacion en Y, roll = rotacion en Z
-// Composicion interna: Rz(roll) * Ry(yaw) * Rx(pitch)
+// ToEulerAngles retorna Vector3D(PHYS_PItch, yaw, roll):
+//   PHYS_PItch = rotacion en X, yaw = rotacion en Y, roll = rotacion en Z
+// Composicion interna: Rz(roll) * Ry(yaw) * Rx(PHYS_PItch)
 
 void example9_axis_angle_and_euler() {
     printSeparator("EJEMPLO 9: Extraccion de Eje/angulo y angulos de Euler");
 
     // -- Eje y angulo ---------------------------
-    float angulo_entrada = PI / 3.0f;   // 60°
+    float angulo_entrada = PHYS_PI / 3.0f;   // 60°
     Vector3D eje_entrada(0.0f, 1.0f, 0.0f);
     Quaternion q = Quaternion::FromAxisAngle(eje_entrada, angulo_entrada);
 
@@ -447,41 +465,41 @@ void example9_axis_angle_and_euler() {
     q.ToAxisAngle(eje_out, angulo_out);
 
     std::cout << "Entrada -> eje=" << eje_entrada.x() << "," << eje_entrada.y() << ","
-              << eje_entrada.z() << "  angulo=" << angulo_entrada * 180.0f / PI << "°\n";
+              << eje_entrada.z() << "  angulo=" << angulo_entrada * 180.0f / PHYS_PI << "°\n";
     printVector3("Eje extraido (debe ser Y)", eje_out);
-    std::cout << "angulo extraido = " << angulo_out * 180.0f / PI << "°\n";
+    std::cout << "angulo extraido = " << angulo_out * 180.0f / PHYS_PI << "°\n";
 
     // La identidad tiene angulo ≈ 0 y eje arbitrario (por convenio X)
     Quaternion::Identity().ToAxisAngle(eje_out, angulo_out);
-    std::cout << "\nIdentidad: angulo=" << angulo_out * 180.0f / PI
+    std::cout << "\nIdentidad: angulo=" << angulo_out * 180.0f / PHYS_PI
               << "°  eje=(" << eje_out.x() << "," << eje_out.y() << "," << eje_out.z() << ")\n";
 
     // -- angulos de Euler -----------------------
-    std::cout << "\n-- angulos de Euler (pitch, yaw, roll) --\n";
+    std::cout << "\n-- angulos de Euler (PHYS_PItch, yaw, roll) --\n";
 
-    // Solo pitch (eje X)
-    Quaternion q_pitch = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PI / 4.0f);
-    Vector3D euler_p = q_pitch.ToEulerAngles();
-    std::cout << "Solo Rx(45°) -> pitch=" << euler_p.x()*180/PI
-              << "° yaw=" << euler_p.y()*180/PI
-              << "° roll=" << euler_p.z()*180/PI << "°\n";
+    // Solo PHYS_PItch (eje X)
+    Quaternion PHYS_PItch = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PHYS_PI / 4.0f);
+    Vector3D euler_p = PHYS_PItch.ToEulerAngles();
+    std::cout << "Solo Rx(45°) -> PHYS_PItch=" << euler_p.x()*180/PHYS_PI
+              << "° yaw=" << euler_p.y()*180/PHYS_PI
+              << "° roll=" << euler_p.z()*180/PHYS_PI << "°\n";
 
     // Solo yaw (eje Y)
-    Quaternion q_yaw = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI / 6.0f);
+    Quaternion q_yaw = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI / 6.0f);
     Vector3D euler_y = q_yaw.ToEulerAngles();
-    std::cout << "Solo Ry(30°) -> pitch=" << euler_y.x()*180/PI
-              << "° yaw=" << euler_y.y()*180/PI
-              << "° roll=" << euler_y.z()*180/PI << "°\n";
+    std::cout << "Solo Ry(30°) -> PHYS_PItch=" << euler_y.x()*180/PHYS_PI
+              << "° yaw=" << euler_y.y()*180/PHYS_PI
+              << "° roll=" << euler_y.z()*180/PHYS_PI << "°\n";
 
     // Solo roll (eje Z)
-    Quaternion q_roll = Quaternion::FromAxisAngle(Vector3D(0, 0, 1), PI / 3.0f);
+    Quaternion q_roll = Quaternion::FromAxisAngle(Vector3D(0, 0, 1), PHYS_PI / 3.0f);
     Vector3D euler_r = q_roll.ToEulerAngles();
-    std::cout << "Solo Rz(60°) -> pitch=" << euler_r.x()*180/PI
-              << "° yaw=" << euler_r.y()*180/PI
-              << "° roll=" << euler_r.z()*180/PI << "°\n";
+    std::cout << "Solo Rz(60°) -> PHYS_PItch=" << euler_r.x()*180/PHYS_PI
+              << "° yaw=" << euler_r.y()*180/PHYS_PI
+              << "° roll=" << euler_r.z()*180/PHYS_PI << "°\n";
 
     // Ida y vuelta: FromEulerAngles -> ToEulerAngles
-    float p_in = PI / 5.0f, y_in = PI / 7.0f, r_in = PI / 9.0f;
+    float p_in = PHYS_PI / 5.0f, y_in = PHYS_PI / 7.0f, r_in = PHYS_PI / 9.0f;
     Quaternion q_idt = Quaternion::FromEulerAngles(p_in, y_in, r_in);
     Vector3D euler_idt = q_idt.ToEulerAngles();
     Vector3D v_test(2.0f, 1.0f, 3.0f);
@@ -506,7 +524,7 @@ void example10_to_matrix() {
 
     // -- ToRotationMatrix() --------------------
     // Equivalencia con la matriz construida directamente
-    float angle = PI / 2.0f;
+    float angle = PHYS_PI / 2.0f;
     Quaternion qZ = Quaternion::FromAxisAngle(Vector3D(0, 0, 1), angle);
     Matrix3D m3  = qZ.ToRotationMatrix();
     Matrix3D m3_direct = Matrix3D::RotationZ(angle);
@@ -521,7 +539,7 @@ void example10_to_matrix() {
     std::cout << "Identity -> Identity3D? " << (m_id == Matrix3D::Identity() ? "SI" : "NO") << "\n";
 
     // Ida y vuelta: Matrix3D -> Quaternion -> Matrix3D
-    Matrix3D rot_orig = Matrix3D::RotationX(PI / 5.0f);
+    Matrix3D rot_orig = Matrix3D::RotationX(PHYS_PI / 5.0f);
     Quaternion q_trip = Quaternion::FromRotationMatrix(rot_orig);
     Matrix3D rot_back = q_trip.ToRotationMatrix();
     std::cout << "\nIda y vuelta Matrix3D -> Q -> Matrix3D: igual? "
@@ -529,7 +547,7 @@ void example10_to_matrix() {
 
     // -- ToTransformMatrix() -------------------
     std::cout << "\n-- ToTransformMatrix() --\n";
-    Quaternion q_arb = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PI / 4.0f);
+    Quaternion q_arb = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PHYS_PI / 4.0f);
     Matrix4D m4 = q_arb.ToTransformMatrix();
 
     std::cout << "Identity -> Identity4D? "
@@ -544,7 +562,7 @@ void example10_to_matrix() {
     std::cout << "m4(3,0)=0? " << (std::abs(m4(3,0)) < 1e-5f ? "SI" : "NO")
               << "  m4(3,3)=1? " << (std::abs(m4(3,3) - 1.0f) < 1e-5f ? "SI" : "NO") << "\n";
 
-    // Uso tipico en pipeline de renderizado: rotar un punto con la Matrix4D
+    // Uso PHYS_PIco en PHYS_PIpeline de renderizado: rotar un punto con la Matrix4D
     Vector4D punto(1.0f, 0.0f, 0.0f, 1.0f);
     Vector4D resultado = m4 * punto;
     Vector3D por_quat  = q_arb.Rotate(Vector3D(1, 0, 0));
@@ -567,7 +585,7 @@ void example11_slerp_nlerp() {
     printSeparator("EJEMPLO 11: Interpolaciones - Slerp y Nlerp");
 
     Quaternion q_start = Quaternion::Identity();
-    Quaternion q_end   = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI / 2.0f);
+    Quaternion q_end   = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI / 2.0f);
 
     std::cout << "Interpolando de Identity a Ry(90°):\n\n";
     std::cout << std::fixed << std::setprecision(4);
@@ -595,7 +613,7 @@ void example11_slerp_nlerp() {
     std::cout << "Slerp en t=1 == q_end?   "
               << (Quaternion::Slerp(q_start, q_end, 1.0f) == q_end   ? "SI" : "NO") << "\n";
 
-    // Clamping: valores fuera de [0,1] se fijan al extremo
+    // PHYS_PIng: valores fuera de [0,1] se fijan al extremo
     std::cout << "Slerp(t=-0.5) == q_start? "
               << (Quaternion::Slerp(q_start, q_end, -0.5f) == q_start ? "SI" : "NO") << "\n";
     std::cout << "Slerp(t= 2.0) == q_end?   "
@@ -653,8 +671,8 @@ void example12_derivative() {
 
         // Eje puede ser X arbitrario cuando angulo≈0; ignorar el signo
         std::cout << "  " << std::fixed << std::setprecision(2) << std::setw(6) << t
-                  << "  " << std::setw(15) << angulo * 180.0f / PI
-                  << "  " << std::setw(15) << t * 180.0f / PI << "\n";
+                  << "  " << std::setw(15) << angulo * 180.0f / PHYS_PI
+                  << "  " << std::setw(15) << t * 180.0f / PHYS_PI << "\n";
 
         // Paso de integracion de Euler:  q += dq/dt * dt
         Quaternion dq = q.Derivative(omega);
@@ -685,7 +703,7 @@ void example13_exp_log() {
     std::cout << "(todos los componentes deben ser ~0)\n";
 
     // exp(log(q)) == q para cuaternion unitario
-    Quaternion q = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PI / 4.0f);
+    Quaternion q = Quaternion::FromAxisAngle(Vector3D(1, 0, 0), PHYS_PI / 4.0f);
     Quaternion log_q   = q.Logarithm();
     Quaternion exp_log = log_q.Exponential();
 
@@ -714,8 +732,8 @@ void example13_exp_log() {
     // se basa internamente en la misma geometria esferica que log/exp.
     std::cout << "\nSquad simplificado (Slerp doble):\n";
     Quaternion q0 = Quaternion::Identity();
-    Quaternion q1 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI / 2.0f);
-    Quaternion q2 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI);
+    Quaternion q1 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI / 2.0f);
+    Quaternion q2 = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI);
 
     float t = 0.5f;
     Quaternion squad_approx = Quaternion::Slerp(
@@ -782,7 +800,7 @@ void example14_rigid_body_simulation() {
     // Interpolacion de camara orbital usando Slerp
     std::cout << "\nInterpolacion de camara orbital (Slerp):\n";
     Quaternion cam_inicio = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), 0.0f);
-    Quaternion cam_fin    = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PI / 2.0f);
+    Quaternion cam_fin    = Quaternion::FromAxisAngle(Vector3D(0, 1, 0), PHYS_PI / 2.0f);
 
     for (int i = 0; i <= 4; ++i) {
         float t_cam = i / 4.0f;

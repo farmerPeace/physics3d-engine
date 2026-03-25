@@ -2,12 +2,29 @@
 #include "physics/math/matrix3d.hpp"
 #include "physics/math/vector3d.hpp"
 #include "physics/math/vector4d.hpp"
+#include "physics/core/config.hpp"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 #include <string>
 
-const float PI = 3.14159265358979323846f;
+/*
+El archivo cubre 12 ejemplos progresivos:
+
+1. **Constructores y matrices especiales** — los 5 constructores, `Identity()`, `Zero()`
+2. **Transformaciones básicas** — traslación, escala, rotaciones elementales y por eje arbitrario
+3. **TRS** — `Translation × Rotation × Scale` combinados, transformando puntos y direcciones
+4. **Aritmética** — suma, resta, escalar, negación, operadores in-place
+5. **Multiplicación y transformación de vectores** — composición de matrices, diferencia entre punto (`w=1`) y dirección (`w=0`)
+6. **Transpuesta** — `Transposed()`, `Transpose()` in-place y la propiedad `(A·B)ᵀ = Bᵀ·Aᵀ`
+7. **Determinante e inversa** — `Determinant()`, `Inverted()`, `Invert()`, `IsInvertible()`
+8. **Columnas, filas y submatrices** — `GetColumn/Row`, `GetUpper3x3`, `GetTranslation`, sus setters
+9. **Proyección perspectiva y ortográfica** — con verificación de las propiedades OpenGL esperadas
+10. **LookAt** — construcción de la matriz de vista y pipeline MVP completo
+11. **Traza, propiedades e interpolación** — `Trace()`, `IsOrthogonal()`, `Lerp()` con clamp
+12. **Físicas prácticas** — cuerpo rígido, transformar al espacio local, pipeline Local→Mundo→Cámara, articulaciones encadenadas (hombro→codo→muñeca)
+*/
+
 
 // ─────────────────────────────────────────────
 // Utilidades de impresion
@@ -69,7 +86,7 @@ void example1_constructors_and_special_matrices() {
     printMatrix("Constructor 16 floats (fila-mayor)", m16);
 
     // Constructor desde Matrix3D (solo rotacion, sin traslacion)
-    Matrix3D rot3 = Matrix3D::RotationZ(PI / 4.0f);
+    Matrix3D rot3 = Matrix3D::RotationZ(PHYS_PI / 4.0f);
     Matrix4D m_from_rot(rot3);
     printMatrix("Desde Matrix3D (RotacionZ 45°)", m_from_rot);
 
@@ -103,9 +120,9 @@ void example2_basic_transforms() {
     printMatrix("Escala uniforme (5)", Su);
 
     // Rotaciones elementales
-    Matrix4D Rx = Matrix4D::RotationX(PI / 6.0f);  // 30°
-    Matrix4D Ry = Matrix4D::RotationY(PI / 4.0f);  // 45°
-    Matrix4D Rz = Matrix4D::RotationZ(PI / 2.0f);  // 90°
+    Matrix4D Rx = Matrix4D::RotationX(PHYS_PI / 6.0f);  // 30°
+    Matrix4D Ry = Matrix4D::RotationY(PHYS_PI / 4.0f);  // 45°
+    Matrix4D Rz = Matrix4D::RotationZ(PHYS_PI / 2.0f);  // 90°
 
     printMatrix("RotationX(30°)", Rx);
     printMatrix("RotationY(45°)", Ry);
@@ -118,7 +135,7 @@ void example2_basic_transforms() {
 
     // Rotacion alrededor de eje arbitrario
     Vector3D eje_diagonal(1.0f, 1.0f, 0.0f);
-    Matrix4D R_eje = Matrix4D::Rotation(PI / 3.0f, eje_diagonal.Normalized());
+    Matrix4D R_eje = Matrix4D::Rotation(PHYS_PI / 3.0f, eje_diagonal.Normalized());
     printMatrix("Rotation(60°, eje (1,1,0))", R_eje);
 }
 
@@ -132,7 +149,7 @@ void example3_trs() {
     std::cout << "========================================\n\n";
 
     Vector3D posicion(10.0f, 5.0f, -2.0f);
-    Matrix3D rotacion = Matrix3D::RotationY(PI / 4.0f);  // 45° en Y
+    Matrix3D rotacion = Matrix3D::RotationY(PHYS_PI / 4.0f);  // 45° en Y
     Vector3D escala(2.0f, 2.0f, 2.0f);
 
     Matrix4D trs = Matrix4D::TRS(posicion, rotacion, escala);
@@ -224,7 +241,7 @@ void example5_matrix_multiply_and_transform() {
     std::cout << "\n";
 
     // Rotacion 90° en Z: (1,0,0) -> (0,1,0)
-    Matrix4D Rz90 = Matrix4D::RotationZ(PI / 2.0f);
+    Matrix4D Rz90 = Matrix4D::RotationZ(PHYS_PI / 2.0f);
     Vector4D eje_x(1.0f, 0.0f, 0.0f, 0.0f);
     Vector4D rotado = Rz90 * eje_x;
     printVector4("Eje X (1,0,0,0) rotado 90° en Z", rotado);
@@ -306,7 +323,7 @@ void example7_determinant_and_inverse() {
     std::cout << "T * T^-1 == I? " << ((T * Ti).IsIdentity() ? "SI" : "NO") << "\n\n";
 
     // Inversa de rotacion: para matrices ortogonales, inversa = transpuesta
-    Matrix4D R  = Matrix4D::RotationX(PI / 5.0f);
+    Matrix4D R  = Matrix4D::RotationX(PHYS_PI / 5.0f);
     Matrix4D Ri = R.Inverted();
     std::cout << "R^-1 == R^T? " << (Ri == R.Transposed() ? "SI" : "NO") << "\n\n";
 
@@ -329,7 +346,7 @@ void example8_column_row_and_submatrix() {
     std::cout << "EJEMPLO 8: Columnas, Filas y Submatrices\n";
     std::cout << "========================================\n\n";
 
-    Matrix3D rot3 = Matrix3D::RotationY(PI / 3.0f);
+    Matrix3D rot3 = Matrix3D::RotationY(PHYS_PI / 3.0f);
     Vector3D traslacion(7.0f, 8.0f, 9.0f);
     Matrix4D m(rot3, traslacion);
     printMatrix("Matriz M (rot Y 60° + traslacion 7,8,9)", m);
@@ -379,7 +396,7 @@ void example9_projection_matrices() {
     std::cout << "========================================\n\n";
 
     // Proyeccion perspectiva (convencion OpenGL, mano derecha, NDC [-1,1])
-    float fovY   = PI / 2.0f;    // 90° de campo visual vertical
+    float fovY   = PHYS_PI / 2.0f;    // 90° de campo visual vertical
     float aspect = 16.0f / 9.0f; // Relacion 16:9
     float near   = 0.1f;
     float far    = 100.0f;
@@ -425,10 +442,10 @@ void example10_lookat() {
     // Pipeline MVP completo: Modelo -> Vista -> Proyeccion
     Matrix4D M = Matrix4D::TRS(
         Vector3D(2.0f, 0.0f, 0.0f),
-        Matrix3D::RotationY(PI / 4.0f),
+        Matrix3D::RotationY(PHYS_PI / 4.0f),
         Vector3D(1.0f, 1.0f, 1.0f)
     );
-    Matrix4D P   = Matrix4D::Perspective(PI / 3.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+    Matrix4D P   = Matrix4D::Perspective(PHYS_PI / 3.0f, 16.0f / 9.0f, 0.1f, 100.0f);
     Matrix4D MVP = P * V * M;
 
     printMatrix("M (modelo)", M);
@@ -455,7 +472,7 @@ void example11_trace_properties_lerp() {
 
     // Propiedades de matrices especiales
     Matrix4D I  = Matrix4D::Identity();
-    Matrix4D Rz = Matrix4D::RotationZ(PI / 4.0f);
+    Matrix4D Rz = Matrix4D::RotationZ(PHYS_PI / 4.0f);
     Matrix4D T  = Matrix4D::Translation(1.0f, 2.0f, 3.0f);
     Matrix4D S  = Matrix4D::Scale(2.0f, 2.0f, 2.0f);
 
@@ -508,7 +525,7 @@ void example12_practical_physics() {
     // ── 1. Transformar un cuerpo rigido ──────
     std::cout << "1. Transformacion de cuerpo rigido\n";
     Vector3D posicion(5.0f, 0.0f, 0.0f);
-    Matrix3D orientacion = Matrix3D::RotationY(PI / 6.0f);  // 30° en Y
+    Matrix3D orientacion = Matrix3D::RotationY(PHYS_PI / 6.0f);  // 30° en Y
     Matrix4D world = Matrix4D::TRS(posicion, orientacion, Vector3D(1, 1, 1));
 
     // Punto en espacio local del cuerpo
@@ -535,7 +552,7 @@ void example12_practical_physics() {
         Vector3D(5.0f, 0.0f, 0.0f),    // mira al cuerpo
         Vector3D(0.0f, 1.0f, 0.0f)     // arriba
     );
-    Matrix4D P = Matrix4D::Perspective(PI / 3.0f, 16.0f / 9.0f, 0.1f, 200.0f);
+    Matrix4D P = Matrix4D::Perspective(PHYS_PI / 3.0f, 16.0f / 9.0f, 0.1f, 200.0f);
     Matrix4D MVP = P * V * M;
 
     Vector4D vertice_local(0.0f, 1.0f, 0.0f, 1.0f);
@@ -555,17 +572,17 @@ void example12_practical_physics() {
     std::cout << "4. Articulacion: hombro -> codo -> muneca\n";
     Matrix4D hombro = Matrix4D::TRS(
         Vector3D(0.0f, 2.0f, 0.0f),
-        Matrix3D::RotationZ(PI / 6.0f),   // 30° en Z (abduccion)
+        Matrix3D::RotationZ(PHYS_PI / 6.0f),   // 30° en Z (abduccion)
         Vector3D(1, 1, 1)
     );
     Matrix4D codo = Matrix4D::TRS(
         Vector3D(0.0f, -1.5f, 0.0f),      // desplazamiento local desde el hombro
-        Matrix3D::RotationZ(-PI / 4.0f),  // -45° (flexion de codo)
+        Matrix3D::RotationZ(-PHYS_PI / 4.0f),  // -45° (flexion de codo)
         Vector3D(1, 1, 1)
     );
     Matrix4D muneca = Matrix4D::TRS(
         Vector3D(0.0f, -1.0f, 0.0f),      // desplazamiento local desde el codo
-        Matrix3D::RotationZ(PI / 8.0f),   // 22.5° (leve rotacion)
+        Matrix3D::RotationZ(PHYS_PI / 8.0f),   // 22.5° (leve rotacion)
         Vector3D(1, 1, 1)
     );
 

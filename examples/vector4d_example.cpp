@@ -5,6 +5,24 @@
 #include <cmath>
 #include <string>
 
+/*
+El archivo cubre 12 ejemplos progresivos:
+    
+1. Los cinco constructores
+2. Getters, setters y operador `[]` (incluyendo excepción por índice)
+3. Suma, resta y negación (`+`, `-`, `+=`, `-=`)
+4. Multiplicación/división por escalar, excepción de división por cero
+5. Comparación con tolerancia EPSILON
+6. `Dot4D` y `ComponentWiseMultiply` (con caso de modulación de color RGBA)
+7. `Magnitude`, `SquareMagnitude`, `Normalized`/`Normalize`; excepciones sobre puntos
+8. Coordenadas homogéneas: `IsPoint`, `IsDirection`, `Homogenize`, `MakeDirection`, `ToVector3D`, `ToDirection3D`
+9. `Distance` y `SquareDistance` con puntos normalizados y no normalizados
+10. Conversión con `Vector3D` y acceso a datos raw con `Data()`
+11. Simulación de partícula con gravedad (integrador de Euler), mostrando cómo la semántica `w` se conserva
+12. Interpolación de cámara con `ComponentWiseMultiply` y cálculo de dirección de vista
+*/
+
+
 // ─────────────────────────────────────────────
 // Utilidades de impresion
 // ─────────────────────────────────────────────
