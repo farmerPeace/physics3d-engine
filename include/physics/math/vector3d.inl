@@ -6,7 +6,7 @@
 #include <cmath>
 
 template <typename Scalar>
-Vector3D &Vector3D::operator *= (const Scalar &scalar) {
+PHYS_FORCE_INLINE Vector3D &Vector3D::operator *= (const Scalar &scalar) {
     static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser tipo aritmetico");
 
     x_ *= static_cast<float>(scalar);
@@ -17,12 +17,12 @@ Vector3D &Vector3D::operator *= (const Scalar &scalar) {
 }
 
 template <typename Scalar>
-Vector3D &Vector3D::operator /= (const Scalar &scalar) {
+PHYS_FORCE_INLINE Vector3D &Vector3D::operator /= (const Scalar &scalar) {
     static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser tipo aritmetico");
     
     const float scalar_f = static_cast<float>(scalar);
 
-    if (std::abs(scalar_f) < std::numeric_limits<float>::epsilon()) {
+    if (std::abs(scalar_f) < PHYS_EPSILON) {
         throw std::domain_error("División por casi cero en un Vector3D");
     }
 
@@ -36,20 +36,20 @@ Vector3D &Vector3D::operator /= (const Scalar &scalar) {
 
 // Multiplicación escalar por ambos lados
 template <typename Scalar>
-inline Vector3D operator *(const Scalar &scalar, Vector3D vect) {
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator *(const Scalar &scalar, Vector3D vect) {
     vect *= scalar;
     return vect;
 }
 
 template <typename Scalar>
-inline Vector3D operator *(Vector3D vect, const Scalar &scalar) {
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator *(Vector3D vect, const Scalar &scalar) {
     vect *= scalar;
     return vect;
 }
 
 // División escalar
 template<typename Scalar>
-inline Vector3D operator / (Vector3D vect, const Scalar& scalar) {
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator / (Vector3D vect, const Scalar& scalar) {
     vect /= scalar;
     return vect;
 }

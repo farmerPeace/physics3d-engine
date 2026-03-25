@@ -261,7 +261,7 @@ void test_exceptions() {
     Vector4D v(1, 2, 3, 4);
     bool caught = false;
     try {
-        v / 0.0f;
+        PHYS_UNUSED(v / 0.0f);
     } catch (const std::domain_error&) {
         caught = true;
     }
@@ -270,7 +270,7 @@ void test_exceptions() {
     // ToVector3D con dirección
     caught = false;
     try {
-        dir.ToVector3D();
+        PHYS_UNUSED(dir.ToVector3D());
     } catch (const std::domain_error&) {
         caught = true;
     }

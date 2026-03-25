@@ -1,95 +1,108 @@
 #pragma once
+#include <cmath>
 
 #include "physics/math/vector3d.hpp"
 #include "physics/math/matrix3d.hpp"
 #include "physics/math/matrix4d.hpp"
 
+#include "physics/core/config.hpp"
+#include "physics/core/macros.hpp"
+
 class Quaternion {
 private:
-    float w_, x_, y_, z_;
+    real w_, x_, y_, z_;
 
 public:
     Quaternion();
-    Quaternion(float w, float x, float y, float z);
-    Quaternion(float w, const Vector3D &vect);
+    Quaternion(real w, real x, real y, real z);
+    Quaternion(real w, const Vector3D &vect);
 
     // Data
-    const float *Data() const;
-    float *Data();
+    PHYS_NODISCARD const real *Data() const;
+    real *Data();
 
     // Acceso por indices
-    float operator [] (int index) const;
-    float &operator [] (int index);
+    PHYS_NODISCARD real operator [] (int index) const;
+    real &operator [] (int index);
 
     // Operadores suma y resta in place entre cuaterniones
     Quaternion &operator += (const Quaternion &rhs);
     Quaternion &operator -= (const Quaternion &rhs);
 
     // Operadores suma y resta entre cuaterniones
-    Quaternion operator + (const Quaternion &rhs) const;
-    Quaternion operator - (const Quaternion &rhs) const;
-    Quaternion operator - () const;
+    PHYS_NODISCARD Quaternion operator + (const Quaternion &rhs) const;
+    PHYS_NODISCARD Quaternion operator - (const Quaternion &rhs) const;
+    PHYS_NODISCARD Quaternion operator - () const;
 
     // Operadores multiplicacion y division con escalar in place
-    Quaternion &operator *= (const float &scalar);
-    Quaternion &operator /= (const float &scalar);
+    Quaternion &operator *= (const real &scalar);
+    Quaternion &operator /= (const real &scalar);
     
     // Operadores multiplicación y división con escalar
-    Quaternion operator * (const float &scalar) const;
-    Quaternion operator / (const float &scalar) const;
+    PHYS_NODISCARD Quaternion operator * (const real &scalar) const;
+    PHYS_NODISCARD Quaternion operator / (const real &scalar) const;
 
     // Multiplicación de cuaterniones
     Quaternion &operator *= (const Quaternion &rhs);
-    Quaternion operator * (const Quaternion &rhs) const;
+    PHYS_NODISCARD Quaternion operator * (const Quaternion &rhs) const;
     
     // Producto punto
-    float Dot(const Quaternion &rhs) const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE real Dot(const Quaternion &rhs) const {
+        return w_ * rhs.w_ + x_ * rhs.x_ + y_ * rhs.y_ + z_ * rhs.z_;
+    }
 
     // Conjugado e inverso
-    Quaternion Conjugate () const;
-    Quaternion Inverse () const;
+    PHYS_NODISCARD Quaternion Conjugate () const;
+    PHYS_NODISCARD Quaternion Inverse () const;
 
     // Magnitud y magnitud al cuadrado
-    float Magnitude () const;
-    float SquareMagnitude () const;
+    PHYS_NODISCARD real Magnitude () const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE real SquareMagnitude () const {
+        return w_ * w_ + x_ * x_ + y_ * y_ + z_ * z_;
+    }
 
     // Normalización
     Quaternion &Normalize ();
-    Quaternion Normalized () const;
+    PHYS_NODISCARD Quaternion Normalized () const;
 
     // Rotar vector por un cuaternion
-    Vector3D Rotate (const Vector3D &vec) const;
+    PHYS_NODISCARD Vector3D Rotate (const Vector3D &vec) const;
 
     // Interpolaciones
-    static Quaternion Slerp (const Quaternion &a, const Quaternion &b, float t);
-    static Quaternion Nlerp (const Quaternion &a, const Quaternion &b, float t);
+    PHYS_NODISCARD static Quaternion Slerp (const Quaternion &a, const Quaternion &b, real t);
+    PHYS_NODISCARD static Quaternion Nlerp (const Quaternion &a, const Quaternion &b, real t);
 
     // Derivada temporal
-    Quaternion Derivative (const Vector3D &angularVelocity) const;
+    PHYS_NODISCARD Quaternion Derivative (const Vector3D &angularVelocity) const;
  
     // Conversiones
-    Matrix3D ToRotationMatrix () const;
-    Matrix4D ToTransformMatrix () const;
-    Vector3D ToEulerAngles () const;
-    void ToAxisAngle (Vector3D &axis, float &angle) const;
+    PHYS_NODISCARD Matrix3D ToRotationMatrix () const;
+    PHYS_NODISCARD Matrix4D ToTransformMatrix () const;
+    PHYS_NODISCARD Vector3D ToEulerAngles () const;
+    void ToAxisAngle (Vector3D &axis, real &angle) const;
 
     // Verificar unitario
-    bool IsUnit () const;
-    bool IsPure () const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE bool IsUnit () const {
+        return std::abs(SquareMagnitude() - static_cast<real>(1.0)) < PHYS_EPSILON;
+    }
+
+    PHYS_NODISCARD PHYS_FORCE_INLINE bool IsPure () const {
+        return std::abs(w_) < PHYS_EPSILON;
+    }
 
     // Operadores de comparación
-    bool operator == (const Quaternion &rhs) const;
-    bool operator != (const Quaternion &rhs) const;
+    PHYS_NODISCARD bool operator == (const Quaternion &rhs) const;
+    PHYS_NODISCARD bool operator != (const Quaternion &rhs) const;
 
     // Exponencial y logaritmo
-    Quaternion Exponential () const;
-    Quaternion Logarithm () const;
+    PHYS_NODISCARD Quaternion Exponential () const;
+    PHYS_NODISCARD Quaternion Logarithm () const;
 
     // Metodos estaticos
-    static Quaternion Identity();
-    static Quaternion FromAxisAngle(const Vector3D &axis, float angle);
-    static Quaternion FromEulerAngles(float pitch, float yaw, float roll);
-    static Quaternion FromRotationMatrix(const Matrix3D &m);
+    PHYS_NODISCARD static Quaternion Identity();
+    PHYS_NODISCARD static Quaternion FromAxisAngle(const Vector3D &axis, real angle);
+    PHYS_NODISCARD static Quaternion FromEulerAngles(real pitch, real yaw, real roll);
+    PHYS_NODISCARD static Quaternion FromRotationMatrix(const Matrix3D &m);
 };
 
-Quaternion operator * (float scalar, const Quaternion &q);
+PHYS_NODISCARD Quaternion operator * (real scalar, const Quaternion &q);

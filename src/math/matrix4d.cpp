@@ -6,18 +6,17 @@
 #include "physics/math/vector3d.hpp"
 #include "physics/math/vector4d.hpp"
 #include "physics/math/matrix3d.hpp"
- 
-#define EPSILON 1e-6f
+
  
 // ─────────────────────────────────────────────
 // Helpers internos
 // ─────────────────────────────────────────────
  
 // Determinante de una matriz 3×3 dada por sus 9 elementos fila-mayor
-static float det3(
-    float a00, float a01, float a02,
-    float a10, float a11, float a12,
-    float a20, float a21, float a22)
+static real det3(
+    real a00, real a01, real a02,
+    real a10, real a11, real a12,
+    real a20, real a21, real a22)
 {
     return a00 * (a11 * a22 - a12 * a21)
          - a01 * (a10 * a22 - a12 * a20)
@@ -37,10 +36,10 @@ Matrix4D::Matrix4D() {
 }
  
 Matrix4D::Matrix4D(
-    float m00, float m01, float m02, float m03,
-    float m10, float m11, float m12, float m13,
-    float m20, float m21, float m22, float m23,
-    float m30, float m31, float m32, float m33)
+    real m00, real m01, real m02, real m03,
+    real m10, real m11, real m12, real m13,
+    real m20, real m21, real m22, real m23,
+    real m30, real m31, real m32, real m33)
 {
     // Entrada fila-mayor → almacenamiento columna-mayor
     matrix[0]  = m00; matrix[4]  = m01; matrix[8]  = m02; matrix[12] = m03;
@@ -49,7 +48,7 @@ Matrix4D::Matrix4D(
     matrix[3]  = m30; matrix[7]  = m31; matrix[11] = m32; matrix[15] = m33;
 }
  
-Matrix4D::Matrix4D(const float data[16]) {
+Matrix4D::Matrix4D(const real data[16]) {
     // Igual que el constructor de 16 floats: interpreta data en fila-mayor
     matrix[0]  = data[0];  matrix[4]  = data[1];  matrix[8]  = data[2];  matrix[12] = data[3];
     matrix[1]  = data[4];  matrix[5]  = data[5];  matrix[9]  = data[6];  matrix[13] = data[7];
@@ -99,7 +98,7 @@ Matrix4D Matrix4D::Zero() {
     return m;
 }
  
-Matrix4D Matrix4D::Translation(float tx, float ty, float tz) {
+Matrix4D Matrix4D::Translation(real tx, real ty, real tz) {
     Matrix4D m;           // parte de rotación = identidad
     m.matrix[12] = tx;
     m.matrix[13] = ty;
@@ -111,7 +110,7 @@ Matrix4D Matrix4D::Translation(const Vector3D &t) {
     return Translation(t.x(), t.y(), t.z());
 }
  
-Matrix4D Matrix4D::Scale(float sx, float sy, float sz) {
+Matrix4D Matrix4D::Scale(real sx, real sy, real sz) {
     Matrix4D m = Zero();
     m.matrix[0]  = sx;
     m.matrix[5]  = sy;
@@ -120,13 +119,13 @@ Matrix4D Matrix4D::Scale(float sx, float sy, float sz) {
     return m;
 }
  
-Matrix4D Matrix4D::Scale(float u) {
+Matrix4D Matrix4D::Scale(real u) {
     return Scale(u, u, u);
 }
  
-Matrix4D Matrix4D::RotationX(float angle) {
-    const float c = std::cos(angle);
-    const float s = std::sin(angle);
+Matrix4D Matrix4D::RotationX(real angle) {
+    const real c = std::cos(angle);
+    const real s = std::sin(angle);
     return Matrix4D(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f,    c,   -s, 0.0f,
@@ -135,9 +134,9 @@ Matrix4D Matrix4D::RotationX(float angle) {
     );
 }
  
-Matrix4D Matrix4D::RotationY(float angle) {
-    const float c = std::cos(angle);
-    const float s = std::sin(angle);
+Matrix4D Matrix4D::RotationY(real angle) {
+    const real c = std::cos(angle);
+    const real s = std::sin(angle);
     return Matrix4D(
            c, 0.0f,    s, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
@@ -146,9 +145,9 @@ Matrix4D Matrix4D::RotationY(float angle) {
     );
 }
  
-Matrix4D Matrix4D::RotationZ(float angle) {
-    const float c = std::cos(angle);
-    const float s = std::sin(angle);
+Matrix4D Matrix4D::RotationZ(real angle) {
+    const real c = std::cos(angle);
+    const real s = std::sin(angle);
     return Matrix4D(
            c,   -s, 0.0f, 0.0f,
            s,    c, 0.0f, 0.0f,
@@ -157,7 +156,7 @@ Matrix4D Matrix4D::RotationZ(float angle) {
     );
 }
  
-Matrix4D Matrix4D::Rotation(float angle, const Vector3D &axis) {
+Matrix4D Matrix4D::Rotation(real angle, const Vector3D &axis) {
     // Embebe la Matrix3D de Rodrigues en la 4×4
     Matrix3D rot3 = Matrix3D::Rotation(angle, axis);
     return Matrix4D(rot3);
@@ -168,7 +167,7 @@ Matrix4D Matrix4D::TRS(const Vector3D &t, const Matrix3D &r, const Vector3D &s) 
     Matrix4D result(r);
     // Aplicar escala a las primeras 3 columnas
     for (int col = 0; col < 3; ++col) {
-        const float scale_factor = (col == 0) ? s.x() : (col == 1) ? s.y() : s.z();
+        const real scale_factor = (col == 0) ? s.x() : (col == 1) ? s.y() : s.z();
         result.matrix[col * 4 + 0] *= scale_factor;
         result.matrix[col * 4 + 1] *= scale_factor;
         result.matrix[col * 4 + 2] *= scale_factor;
@@ -181,16 +180,16 @@ Matrix4D Matrix4D::TRS(const Vector3D &t, const Matrix3D &r, const Vector3D &s) 
     return result;
 }
  
-Matrix4D Matrix4D::Perspective(float fovY, float aspect, float near, float far) {
-    if (std::abs(aspect) < EPSILON) {
+Matrix4D Matrix4D::Perspective(real fovY, real aspect, real near, real far) {
+    if (std::abs(aspect) < PHYS_EPSILON) {
         throw std::domain_error("Perspective: aspect ratio no puede ser cero");
     }
-    if (std::abs(far - near) < EPSILON) {
+    if (std::abs(far - near) < PHYS_EPSILON) {
         throw std::domain_error("Perspective: near y far no pueden ser iguales");
     }
  
-    const float tan_half = std::tan(fovY * 0.5f);
-    const float range    = far - near;
+    const real tan_half = std::tan(fovY * 0.5f);
+    const real range    = far - near;
  
     Matrix4D m = Zero();
     m.matrix[0]  =  1.0f / (aspect * tan_half);  // (0,0)
@@ -203,20 +202,20 @@ Matrix4D Matrix4D::Perspective(float fovY, float aspect, float near, float far) 
 }
  
 Matrix4D Matrix4D::Orthographic(
-    float left, float right,
-    float bottom, float top,
-    float near, float far)
+    real left, real right,
+    real bottom, real top,
+    real near, real far)
 {
-    if (std::abs(right - left)   < EPSILON ||
-        std::abs(top   - bottom) < EPSILON ||
-        std::abs(far   - near)   < EPSILON)
+    if (std::abs(right - left)   < PHYS_EPSILON ||
+        std::abs(top   - bottom) < PHYS_EPSILON ||
+        std::abs(far   - near)   < PHYS_EPSILON)
     {
         throw std::domain_error("Orthographic: dimensiones degeneradas (division por cero)");
     }
  
-    const float rl = right - left;
-    const float tb = top   - bottom;
-    const float fn = far   - near;
+    const real rl = right - left;
+    const real tb = top   - bottom;
+    const real fn = far   - near;
  
     Matrix4D m = Zero();
     m.matrix[0]  =  2.0f / rl;                    // (0,0)
@@ -247,14 +246,14 @@ Matrix4D Matrix4D::LookAt(const Vector3D &eye, const Vector3D &target, const Vec
 // Acceso por índice
 // ─────────────────────────────────────────────
  
-float Matrix4D::operator () (int row, int col) const {
+real Matrix4D::operator () (int row, int col) const {
     if (row < 0 || row > 3 || col < 0 || col > 3) {
         throw std::out_of_range("Indice Matrix4D fuera de rango");
     }
     return matrix[col * 4 + row];
 }
  
-float &Matrix4D::operator () (int row, int col) {
+real &Matrix4D::operator () (int row, int col) {
     if (row < 0 || row > 3 || col < 0 || col > 3) {
         throw std::out_of_range("Indice Matrix4D fuera de rango");
     }
@@ -344,17 +343,17 @@ Matrix4D Matrix4D::operator - (const Matrix4D &rhs) const {
     return result;
 }
  
-Matrix4D Matrix4D::operator * (float scalar) const {
+Matrix4D Matrix4D::operator * (real scalar) const {
     Matrix4D result;
     for (int i = 0; i < 16; ++i) result.matrix[i] = matrix[i] * scalar;
     return result;
 }
  
-Matrix4D Matrix4D::operator / (float scalar) const {
-    if (std::abs(scalar) < EPSILON) {
+Matrix4D Matrix4D::operator / (real scalar) const {
+    if (std::abs(scalar) < PHYS_EPSILON) {
         throw std::domain_error("Division por (casi) cero en Matrix4D");
     }
-    const float inv = 1.0f / scalar;
+    const real inv = 1.0f / scalar;
     Matrix4D result;
     for (int i = 0; i < 16; ++i) result.matrix[i] = matrix[i] * inv;
     return result;
@@ -376,16 +375,16 @@ Matrix4D &Matrix4D::operator -= (const Matrix4D &rhs) {
     return *this;
 }
  
-Matrix4D &Matrix4D::operator *= (float scalar) {
+Matrix4D &Matrix4D::operator *= (real scalar) {
     for (int i = 0; i < 16; ++i) matrix[i] *= scalar;
     return *this;
 }
  
-Matrix4D &Matrix4D::operator /= (float scalar) {
-    if (std::abs(scalar) < EPSILON) {
+Matrix4D &Matrix4D::operator /= (real scalar) {
+    if (std::abs(scalar) < PHYS_EPSILON) {
         throw std::domain_error("Division por (casi) cero en Matrix4D");
     }
-    const float inv = 1.0f / scalar;
+    const real inv = 1.0f / scalar;
     for (int i = 0; i < 16; ++i) matrix[i] *= inv;
     return *this;
 }
@@ -395,7 +394,7 @@ Matrix4D Matrix4D::operator * (const Matrix4D &rhs) const {
     Matrix4D result = Zero();
     for (int row = 0; row < 4; ++row) {
         for (int col = 0; col < 4; ++col) {
-            float sum = 0.0f;
+            real sum = 0.0f;
             for (int k = 0; k < 4; ++k) {
                 sum += matrix[k * 4 + row] * rhs.matrix[col * 4 + k];
             }
@@ -406,12 +405,12 @@ Matrix4D Matrix4D::operator * (const Matrix4D &rhs) const {
 }
  
 Matrix4D &Matrix4D::operator *= (const Matrix4D &rhs) {
-    float temp[16];
+    real temp[16];
     for (int i = 0; i < 16; ++i) temp[i] = matrix[i];
  
     for (int row = 0; row < 4; ++row) {
         for (int col = 0; col < 4; ++col) {
-            float sum = 0.0f;
+            real sum = 0.0f;
             for (int k = 0; k < 4; ++k) {
                 sum += temp[k * 4 + row] * rhs.matrix[col * 4 + k];
             }
@@ -432,7 +431,7 @@ Vector4D Matrix4D::operator * (const Vector4D &v) const {
 }
  
 // Conmutativa global
-Matrix4D operator * (float scalar, const Matrix4D &m) {
+Matrix4D operator * (real scalar, const Matrix4D &m) {
     return m * scalar;
 }
  
@@ -442,7 +441,7 @@ Matrix4D operator * (float scalar, const Matrix4D &m) {
  
 bool Matrix4D::operator == (const Matrix4D &rhs) const {
     for (int i = 0; i < 16; ++i) {
-        if (std::abs(matrix[i] - rhs.matrix[i]) > EPSILON) return false;
+        if (std::abs(matrix[i] - rhs.matrix[i]) > PHYS_EPSILON) return false;
     }
     return true;
 }
@@ -478,28 +477,28 @@ Matrix4D &Matrix4D::Transpose() {
 // Determinante e inversa
 // ─────────────────────────────────────────────
  
-float Matrix4D::Determinant() const {
+real Matrix4D::Determinant() const {
     // Elementos por nombre: mRC = elemento en fila R, columna C
     // matrix[col*4+row]
-    const float m00 = matrix[0],  m10 = matrix[1],  m20 = matrix[2],  m30 = matrix[3];
-    const float m01 = matrix[4],  m11 = matrix[5],  m21 = matrix[6],  m31 = matrix[7];
-    const float m02 = matrix[8],  m12 = matrix[9],  m22 = matrix[10], m32 = matrix[11];
-    const float m03 = matrix[12], m13 = matrix[13], m23 = matrix[14], m33 = matrix[15];
+    const real m00 = matrix[0],  m10 = matrix[1],  m20 = matrix[2],  m30 = matrix[3];
+    const real m01 = matrix[4],  m11 = matrix[5],  m21 = matrix[6],  m31 = matrix[7];
+    const real m02 = matrix[8],  m12 = matrix[9],  m22 = matrix[10], m32 = matrix[11];
+    const real m03 = matrix[12], m13 = matrix[13], m23 = matrix[14], m33 = matrix[15];
  
     // Expansión por cofactores a lo largo de la primera fila
-    const float c00 = det3(m11, m12, m13,
+    const real c00 = det3(m11, m12, m13,
                             m21, m22, m23,
                             m31, m32, m33);
  
-    const float c01 = det3(m10, m12, m13,
+    const real c01 = det3(m10, m12, m13,
                             m20, m22, m23,
                             m30, m32, m33);
  
-    const float c02 = det3(m10, m11, m13,
+    const real c02 = det3(m10, m11, m13,
                             m20, m21, m23,
                             m30, m31, m33);
  
-    const float c03 = det3(m10, m11, m12,
+    const real c03 = det3(m10, m11, m12,
                             m20, m21, m22,
                             m30, m31, m32);
  
@@ -507,22 +506,22 @@ float Matrix4D::Determinant() const {
 }
  
 bool Matrix4D::IsInvertible() const {
-    return std::abs(Determinant()) > EPSILON;
+    return std::abs(Determinant()) > PHYS_EPSILON;
 }
  
 Matrix4D Matrix4D::Inverted() const {
-    const float det = Determinant();
-    if (std::abs(det) < EPSILON) {
+    const real det = Determinant();
+    if (std::abs(det) < PHYS_EPSILON) {
         throw std::runtime_error("Matrix4D no invertible: el determinante es cero");
     }
  
-    const float inv_det = 1.0f / det;
+    const real inv_det = 1.0f / det;
  
     // Extraer los 16 elementos para legibilidad
-    const float m00 = matrix[0],  m10 = matrix[1],  m20 = matrix[2],  m30 = matrix[3];
-    const float m01 = matrix[4],  m11 = matrix[5],  m21 = matrix[6],  m31 = matrix[7];
-    const float m02 = matrix[8],  m12 = matrix[9],  m22 = matrix[10], m32 = matrix[11];
-    const float m03 = matrix[12], m13 = matrix[13], m23 = matrix[14], m33 = matrix[15];
+    const real m00 = matrix[0],  m10 = matrix[1],  m20 = matrix[2],  m30 = matrix[3];
+    const real m01 = matrix[4],  m11 = matrix[5],  m21 = matrix[6],  m31 = matrix[7];
+    const real m02 = matrix[8],  m12 = matrix[9],  m22 = matrix[10], m32 = matrix[11];
+    const real m03 = matrix[12], m13 = matrix[13], m23 = matrix[14], m33 = matrix[15];
  
     // Cofactores C(row, col) — la adjugada es la transpuesta de la matriz de cofactores
     // result(row, col) = (-1)^(row+col) * minor(col, row) / det
@@ -560,7 +559,7 @@ Matrix4D &Matrix4D::Invert() {
 // Propiedades
 // ─────────────────────────────────────────────
  
-float Matrix4D::Trace() const {
+real Matrix4D::Trace() const {
     return matrix[0] + matrix[5] + matrix[10] + matrix[15];
 }
  
@@ -571,7 +570,7 @@ bool Matrix4D::IsIdentity() const {
  
 bool Matrix4D::IsZero() const {
     for (int i = 0; i < 16; ++i) {
-        if (std::abs(matrix[i]) >= EPSILON) return false;
+        if (std::abs(matrix[i]) >= PHYS_EPSILON) return false;
     }
     return true;
 }
@@ -584,21 +583,21 @@ bool Matrix4D::IsOrthogonal() const {
     // para que matrices de traslación (cuya 4ª columna no es unitaria
     // en el sentido 4D) devuelvan false correctamente.
     for (int col = 0; col < 4; ++col) {
-        float dot = 0.0f;
+        real dot = 0.0f;
         for (int row = 0; row < 4; ++row) {
-            const float v = matrix[col * 4 + row];
+            const real v = matrix[col * 4 + row];
             dot += v * v;
         }
-        if (std::abs(dot - 1.0f) > EPSILON) return false;
+        if (std::abs(dot - 1.0f) > PHYS_EPSILON) return false;
     }
  
     for (int i = 0; i < 4; ++i) {
         for (int j = i + 1; j < 4; ++j) {
-            float dot = 0.0f;
+            real dot = 0.0f;
             for (int row = 0; row < 4; ++row) {
                 dot += matrix[i * 4 + row] * matrix[j * 4 + row];
             }
-            if (std::abs(dot) > EPSILON) return false;
+            if (std::abs(dot) > PHYS_EPSILON) return false;
         }
     }
  
@@ -609,7 +608,7 @@ bool Matrix4D::IsOrthogonal() const {
 // Interpolación
 // ─────────────────────────────────────────────
  
-Matrix4D Matrix4D::Lerp(const Matrix4D &a, const Matrix4D &b, float t) {
+Matrix4D Matrix4D::Lerp(const Matrix4D &a, const Matrix4D &b, real t) {
     t = std::max(0.0f, std::min(1.0f, t));
     Matrix4D result;
     for (int i = 0; i < 16; ++i) {
@@ -622,10 +621,10 @@ Matrix4D Matrix4D::Lerp(const Matrix4D &a, const Matrix4D &b, float t) {
 // Acceso a datos raw
 // ─────────────────────────────────────────────
  
-const float *Matrix4D::Data() const {
+const real *Matrix4D::Data() const {
     return matrix;
 }
  
-float *Matrix4D::Data() {
+real *Matrix4D::Data() {
     return matrix;
 }

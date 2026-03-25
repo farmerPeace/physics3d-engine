@@ -10,13 +10,13 @@ Matrix3D::Matrix3D() {
     matrix[2] = 0.0f; matrix[5] = 0.0f; matrix[8] = 1.0f;
 }
 
-Matrix3D::Matrix3D(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) {
+Matrix3D::Matrix3D(real m00, real m01, real m02, real m10, real m11, real m12, real m20, real m21, real m22) {
     matrix[0] = m00; matrix[3] = m01; matrix[6] = m02;
     matrix[1] = m10; matrix[4] = m11; matrix[7] = m12;
     matrix[2] = m20; matrix[5] = m21; matrix[8] = m22;
 }
 
-Matrix3D::Matrix3D(const float data[9]) {
+Matrix3D::Matrix3D(const real data[9]) {
     matrix[0] = data[0]; matrix[3] = data[1]; matrix[6] = data[2];
     matrix[1] = data[3]; matrix[4] = data[4]; matrix[7] = data[5];
     matrix[2] = data[6]; matrix[5] = data[7]; matrix[8] = data[8];
@@ -61,7 +61,7 @@ Matrix3D Matrix3D::Zero() {
 }
 
 // Métodos estaticos para escalares y rotación
-Matrix3D Matrix3D::Scale(float sx, float sy, float sz) {
+Matrix3D Matrix3D::Scale(real sx, real sy, real sz) {
     return Matrix3D (
         sx, 0.0f, 0.0f,
         0.0f, sy, 0.0f,
@@ -69,7 +69,7 @@ Matrix3D Matrix3D::Scale(float sx, float sy, float sz) {
     );
 }
 
-Matrix3D Matrix3D::Scale(float uniformScale) {
+Matrix3D Matrix3D::Scale(real uniformScale) {
     return Matrix3D (
         uniformScale, 0.0f, 0.0f,
         0.0f, uniformScale, 0.0f,
@@ -78,7 +78,7 @@ Matrix3D Matrix3D::Scale(float uniformScale) {
 }
 
 // Métodos de rotación
-Matrix3D Matrix3D::RotationX(float angle) {
+Matrix3D Matrix3D::RotationX(real angle) {
     return Matrix3D (
         1.0f, 0.0f, 0.0f,
         0.0f, cos(angle), -sin(angle),
@@ -86,7 +86,7 @@ Matrix3D Matrix3D::RotationX(float angle) {
     );
 }
 
-Matrix3D Matrix3D::RotationY(float angle) {
+Matrix3D Matrix3D::RotationY(real angle) {
     return Matrix3D (
         cos(angle), 0.0f, sin(angle),
         0.0f, 1.0f, 0.0f,
@@ -94,7 +94,7 @@ Matrix3D Matrix3D::RotationY(float angle) {
     );
 }
 
-Matrix3D Matrix3D::RotationZ(float angle) {
+Matrix3D Matrix3D::RotationZ(real angle) {
     return Matrix3D (
        cos(angle), -sin(angle), 0.0f,
        sin(angle), cos(angle), 0.0f,
@@ -102,16 +102,16 @@ Matrix3D Matrix3D::RotationZ(float angle) {
     );
 }
 
-Matrix3D Matrix3D::Rotation(float angle, const Vector3D &axis) {
+Matrix3D Matrix3D::Rotation(real angle, const Vector3D &axis) {
     Vector3D axis_norm = axis.Normalized();
     
-    float c = cos(angle);
-    float s = sin(angle);
-    float t = 1 -  c;
+    real c = cos(angle);
+    real s = sin(angle);
+    real t = 1 -  c;
 
-    float x = axis_norm.x();
-    float y = axis_norm.y();
-    float z = axis_norm.z();
+    real x = axis_norm.x();
+    real y = axis_norm.y();
+    real z = axis_norm.z();
 
     return Matrix3D(
         t * x * x + c, t * x * y + s * z, t * x * z - s * y,  
@@ -121,7 +121,7 @@ Matrix3D Matrix3D::Rotation(float angle, const Vector3D &axis) {
 }
 
 // Acceso por indices
-float Matrix3D::operator () (int row, int col) const {
+real Matrix3D::operator () (int row, int col) const {
     if (row < 0 || row > 2 || col < 0 || col > 2) {
         throw std::out_of_range("Indice Matrix3D fuera de rango");
     }
@@ -129,7 +129,7 @@ float Matrix3D::operator () (int row, int col) const {
     return matrix[col * 3 + row];
 }
 
-float &Matrix3D::operator () (int row, int col) {
+real &Matrix3D::operator () (int row, int col) {
     if (row < 0 || row > 2 || col < 0 || col > 2) {
         throw std::out_of_range("Indice Matrix3D fuera de rango");
     }
@@ -190,7 +190,7 @@ Matrix3D Matrix3D::operator - (const Matrix3D &rhs) const {
     );
 }
 
-Matrix3D Matrix3D::operator * (float scalar) const {
+Matrix3D Matrix3D::operator * (real scalar) const {
     return Matrix3D (
         matrix[0] * scalar, matrix[3] * scalar, matrix[6] * scalar,
         matrix[1] * scalar, matrix[4] * scalar, matrix[7] * scalar,
@@ -198,13 +198,13 @@ Matrix3D Matrix3D::operator * (float scalar) const {
     );
 }
 
-Matrix3D Matrix3D::operator / (float scalar) const {
-    const float EPSILON = 1e-6f;
+Matrix3D Matrix3D::operator / (real scalar) const {
+    const real EPSILON = 1e-6f;
     if (std::abs(scalar) < EPSILON) {
         throw std::domain_error("Division por cero");
     }
 
-    float inv = 1.0f / scalar;
+    real inv = 1.0f / scalar;
 
     return Matrix3D (
         matrix[0] * inv, matrix[3] * inv, matrix[6] * inv,
@@ -229,7 +229,7 @@ Matrix3D &Matrix3D::operator -= (const Matrix3D &rhs) {
     return *this;
 }
 
-Matrix3D &Matrix3D::operator *= (float scalar) {
+Matrix3D &Matrix3D::operator *= (real scalar) {
     matrix[0] *= scalar; matrix[3] *= scalar; matrix[6] *= scalar;
     matrix[1] *= scalar; matrix[4] *= scalar; matrix[7] *= scalar;
     matrix[2] *= scalar; matrix[5] *= scalar; matrix[8] *= scalar;
@@ -237,13 +237,13 @@ Matrix3D &Matrix3D::operator *= (float scalar) {
     return *this;
 }
 
-Matrix3D &Matrix3D::operator /= (float scalar) {
-    const float EPSILON = 1e-6f;
+Matrix3D &Matrix3D::operator /= (real scalar) {
+    const real EPSILON = 1e-6f;
     if (std::abs(scalar) < EPSILON) {
         throw std::domain_error("Division por cero");
     }
 
-    float inv = 1.0f / scalar;
+    real inv = 1.0f / scalar;
 
     matrix[0] *= inv; matrix[3] *= inv; matrix[6] *= inv;
     matrix[1] *= inv; matrix[4] *= inv; matrix[7] *= inv;
@@ -266,7 +266,7 @@ Matrix3D Matrix3D::operator*(const Matrix3D &rhs) const {
 
     for (int row = 0; row < 3; row++) {
         for (int col = 0; col < 3; col++) {
-            float sum = 0.0f;
+            real sum = 0.0f;
             for (int k = 0; k < 3; k++) {
                 sum += matrix[k * 3 + row] * rhs.matrix[col * 3 + k];
             }
@@ -279,7 +279,7 @@ Matrix3D Matrix3D::operator*(const Matrix3D &rhs) const {
 
 Matrix3D &Matrix3D::operator*=(const Matrix3D &rhs) {
     // Guardar valores originales
-    float temp[9];
+    real temp[9];
     for (int i = 0; i < 9; i++) {
         temp[i] = matrix[i];
     }
@@ -287,7 +287,7 @@ Matrix3D &Matrix3D::operator*=(const Matrix3D &rhs) {
     // Multiplicación correcta
     for (int row = 0; row < 3; row++) {
         for (int col = 0; col < 3; col++) {
-            float sum = 0.0f;
+            real sum = 0.0f;
             for (int k = 0; k < 3; k++) {
                 sum += temp[k * 3 + row] * rhs.matrix[col * 3 + k];
             }
@@ -298,7 +298,7 @@ Matrix3D &Matrix3D::operator*=(const Matrix3D &rhs) {
     return *this;
 }
 
-float Matrix3D::Trace() const {
+real Matrix3D::Trace() const {
     return matrix[0] + matrix[4] + matrix[8];
 }
 
@@ -311,7 +311,7 @@ Vector3D Matrix3D::operator*(const Vector3D &vec) const {
 }
 
 bool Matrix3D::operator == (const Matrix3D &rhs) const {
-    const float EPSILON = 1e-6f;
+    const real EPSILON = 1e-6f;
     for (int i = 0; i < 9; i++) {
         if (std::abs(matrix[i] - rhs.matrix[i]) > EPSILON) {
             return false;
@@ -340,25 +340,25 @@ Matrix3D &Matrix3D::Transpose () {
     return *this;
 }
 
-float Matrix3D::Determinant () const {
+real Matrix3D::Determinant () const {
     return matrix[0] * (matrix[4] * matrix[8] - matrix[5] * matrix[7]) -
            matrix[1] * (matrix[3] * matrix[8] - matrix[5] * matrix[6]) +
            matrix[2] * (matrix[3] * matrix[7] - matrix[4] * matrix[6]);
 }
 
 bool Matrix3D::IsInvertible () const {
-    const float EPSILON = 1e-6f;
+    const real EPSILON = 1e-6f;
     return std::abs(Determinant()) > EPSILON;
 }
 
 Matrix3D Matrix3D::Inverted() const {
     
-        const float EPSILON = 1e-6f;
-    float det = Determinant();
+        const real EPSILON = 1e-6f;
+    real det = Determinant();
     if (std::abs(det) < EPSILON)
         throw std::runtime_error("Matriz no invertible: el determinante es cero");
  
-    float invDet = 1.0f / det;
+    real invDet = 1.0f / det;
  
     // Layout column-major. Alias para claridad:
     //   a = matrix[0]   b = matrix[3]   c = matrix[6]
@@ -390,17 +390,17 @@ Matrix3D Matrix3D::Inverted() const {
 }
 
 Matrix3D& Matrix3D::Invert() {
-    const float EPSILON = 1e-6f;
-    float det = Determinant();
+    const real EPSILON = 1e-6f;
+    real det = Determinant();
     if (std::abs(det) < EPSILON)
         throw std::runtime_error("Matriz no invertible: el determinante es cero");
  
-    float invDet = 1.0f / det;
+    real invDet = 1.0f / det;
  
     // Guardar valores originales antes de sobreescribir
-    const float a = matrix[0], b = matrix[3], c = matrix[6];
-    const float d = matrix[1], e = matrix[4], f = matrix[7];
-    const float g = matrix[2], h = matrix[5], i = matrix[8];
+    const real a = matrix[0], b = matrix[3], c = matrix[6];
+    const real d = matrix[1], e = matrix[4], f = matrix[7];
+    const real g = matrix[2], h = matrix[5], i = matrix[8];
  
     // Columna 0
     matrix[0] = (e*i - h*f) * invDet;
@@ -421,7 +421,7 @@ Matrix3D& Matrix3D::Invert() {
 }
 
 bool Matrix3D::IsIdentity () const {
-    const float EPSILON = 1e-6f;
+    const real EPSILON = 1e-6f;
     return (
         std::abs(matrix[0] - 1.0f) < EPSILON && std::abs(matrix[3]) < EPSILON && std::abs(matrix[6]) < EPSILON &&
         std::abs(matrix[1]) < EPSILON && std::abs(matrix[4] - 1.0f) < EPSILON && std::abs(matrix[7]) < EPSILON &&
@@ -430,7 +430,7 @@ bool Matrix3D::IsIdentity () const {
 }
 
 bool Matrix3D::IsZero () const {
-    const float EPSILON = 1e-6f;
+    const real EPSILON = 1e-6f;
     for (int i = 0; i < 9; i++) {
         if (std::abs(matrix[i]) >= EPSILON) return false;
     }
@@ -438,7 +438,7 @@ bool Matrix3D::IsZero () const {
 }
 
 bool Matrix3D::IsSymmetric () const {
-    const float EPSILON = 1e-6f;
+    const real EPSILON = 1e-6f;
     return (
         std::abs(matrix[1] - matrix[3]) < EPSILON &&
         std::abs(matrix[2] - matrix[6]) < EPSILON &&
@@ -447,13 +447,13 @@ bool Matrix3D::IsSymmetric () const {
 }
 
 bool Matrix3D::IsOrthogonal() const {
-    const float EPSILON = 1e-6f;
+    const real EPSILON = 1e-6f;
     
     // Verificar que cada columna sea vector unitario
     for (int col = 0; col < 3; col++) {
-        float dot = 0;
+        real dot = 0;
         for (int row = 0; row < 3; row++) {
-            float val = matrix[col * 3 + row];
+            real val = matrix[col * 3 + row];
             dot += val * val;
         }
         if (std::abs(dot - 1.0f) > EPSILON) {
@@ -464,7 +464,7 @@ bool Matrix3D::IsOrthogonal() const {
     // Verificar que columnas sean ortogonales entre sí
     for (int i = 0; i < 3; i++) {
         for (int j = i + 1; j < 3; j++) {
-            float dot = 0;
+            real dot = 0;
             for (int row = 0; row < 3; row++) {
                 dot += matrix[i * 3 + row] * matrix[j * 3 + row];
             }
@@ -477,7 +477,7 @@ bool Matrix3D::IsOrthogonal() const {
     return true;
 }
 
-Matrix3D Matrix3D::Lerp(const Matrix3D &a, const Matrix3D &b, float t) {
+Matrix3D Matrix3D::Lerp(const Matrix3D &a, const Matrix3D &b, real t) {
     // Asegurar que t esté en [0, 1]
     t = std::max(0.0f, std::min(1.0f, t));
     

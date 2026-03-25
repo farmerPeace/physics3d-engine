@@ -3,34 +3,56 @@
 #include <type_traits>
 #include <stdexcept>
 
+#include "physics/core/config.hpp"
+#include "physics/core/macros.hpp"
+
 class Vector3D {
 private:
-    float x_, y_, z_;
+    real x_, y_, z_;
 
 public:
     // Constructores
     Vector3D();
-    Vector3D(float x, float y, float z);
-    Vector3D(const float arr[3]);
+    Vector3D(real x, real y, real z);
+    Vector3D(const real arr[3]);
 
     // Getters y 
-    float x() const;
-    float y() const;
-    float z() const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE real x() const { return x_; };
+    PHYS_NODISCARD PHYS_FORCE_INLINE real y() const { return y_; };
+    PHYS_NODISCARD PHYS_FORCE_INLINE real z() const { return z_; };
 
     // Setters
-    void set_x(float x);
-    void set_y(float y);
-    void set_z(float z);  
+    PHYS_FORCE_INLINE void set_x(real x) { x_ = x; };
+    PHYS_FORCE_INLINE void set_y(real y) { y_ = y; };
+    PHYS_FORCE_INLINE void set_z(real z) { z_ = z; };  
     
     // Operadores de asignación (suma y resta)
-    Vector3D &operator += (const Vector3D &rhs);
-    Vector3D &operator -= (const Vector3D &rhs);
+    PHYS_FORCE_INLINE Vector3D &operator += (const Vector3D &rhs) {
+        x_ += rhs.x_;
+        y_ += rhs.y_;
+        z_ += rhs.z_;
+        return *this;
+    }
+
+    PHYS_FORCE_INLINE Vector3D &operator -= (const Vector3D &rhs) {
+        x_ -= rhs.x_;
+        y_ -= rhs.y_;
+        z_ -= rhs.z_;
+        return *this;        
+    }
 
     // Operadores arimeticos (suma y resta)
-    Vector3D operator + (const Vector3D& rhs) const;
-    Vector3D operator - (const Vector3D& rhs) const;
-    Vector3D operator - () const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator + (const Vector3D& rhs) const {
+        return Vector3D(x_ + rhs.x_, y_ + rhs.y_, z_ + rhs.z_);
+    }
+
+    PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator - (const Vector3D& rhs) const {
+        return Vector3D(x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_);
+    }
+
+    PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator - () const {
+        return Vector3D(-x_, -y_, -z_);
+    }
 
     // Multiplicación y división con escalar
     template <typename Scalar>
@@ -40,28 +62,45 @@ public:
     Vector3D &operator /= (const Scalar &scalar);
 
     // Operadores de comparación
-    bool operator == (const Vector3D &rhs) const;
-    bool operator != (const Vector3D &rhs) const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE bool operator == (const Vector3D &rhs) const {
+        return std::abs(x_ - rhs.x_) <= PHYS_EPSILON &&
+            std::abs(y_ - rhs.y_) <= PHYS_EPSILON &&
+            std::abs(z_ - rhs.z_) <= PHYS_EPSILON;
+    }
+
+    PHYS_NODISCARD PHYS_FORCE_INLINE bool operator != (const Vector3D &rhs) const {
+        return !(*this == rhs);
+    }
 
     // Acceso por indice
-    float operator [] (int index) const;
-    float &operator [] (int index);
+    PHYS_NODISCARD real operator [] (int index) const;
+    real &operator [] (int index);
 
     // Producto punto y producto cruz
-    float Dot3D (const Vector3D &rhs) const;
-    Vector3D Cross3D(const Vector3D &rhs) const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE real Dot3D (const Vector3D &rhs) const {
+        return (
+            x_ * rhs.x_ +
+            y_ * rhs.y_ +
+            z_ * rhs.z_
+        );
+    }
+
+    PHYS_NODISCARD Vector3D Cross3D(const Vector3D &rhs) const;
 
     // Magnitud y magnitud al cuadrado
-    float Magnitude() const;
-    float SquareMagnitude() const;
+    PHYS_NODISCARD real Magnitude() const;
+    
+    PHYS_NODISCARD PHYS_FORCE_INLINE real SquareMagnitude() const {
+        return x_ * x_ + y_ * y_ + z_ * z_;
+    }
 
     // Normalización
     Vector3D &Normalize ();
-    Vector3D Normalized () const;
+    PHYS_NODISCARD Vector3D Normalized () const;
 
     // Distancia y distancia cuadrada
-    static float Distance(const Vector3D &a, const Vector3D &b);
-    static float SquaredDistance(const Vector3D &a, const Vector3D &b);
+    PHYS_NODISCARD static real Distance(const Vector3D &a, const Vector3D &b);
+    PHYS_NODISCARD static real SquaredDistance(const Vector3D &a, const Vector3D &b);
 };
 
 // Funciones globales

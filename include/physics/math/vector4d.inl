@@ -1,15 +1,12 @@
 #ifndef VECTOR4D_INL
 #define VECTOR4D_INL
 
-#define EPSILON 1e-6f
-
 #include <type_traits>
-#include <limits>
 #include <cmath>
 
 // Operadres multiplicacion y division con escalar in place
 template <typename Scalar>
-Vector4D &Vector4D::operator *= (const Scalar &scalar) {
+PHYS_FORCE_INLINE Vector4D &Vector4D::operator *= (const Scalar &scalar) {
     static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser arimetico");
 
     x_ *= static_cast<float>(scalar);
@@ -21,12 +18,12 @@ Vector4D &Vector4D::operator *= (const Scalar &scalar) {
 }
 
 template <typename Scalar>
-Vector4D &Vector4D::operator /= (const Scalar &scalar) {
+PHYS_FORCE_INLINE Vector4D &Vector4D::operator /= (const Scalar &scalar) {
     static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser arimetrico");
 
     const float scalar_f = static_cast<float>(scalar);
 
-    if (std::abs(scalar_f) < EPSILON) {
+    if (std::abs(scalar_f) < PHYS_EPSILON) {
         throw std::domain_error("Division por (casi) cero en un Vector4D");
     }
 
@@ -42,19 +39,19 @@ Vector4D &Vector4D::operator /= (const Scalar &scalar) {
 
 // Operadores multiplicacion y division con escalar 
 template <typename Scalar>
-Vector4D Vector4D::operator * (const Scalar &scalar) const {
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector4D Vector4D::operator * (const Scalar &scalar) const {
     static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser aritmetico");
 
     return Vector4D(x_ * scalar, y_ * scalar, z_ * scalar, w_ * scalar);
 }
 
 template <typename Scalar>
-Vector4D Vector4D::operator / (const Scalar &scalar) const {
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector4D Vector4D::operator / (const Scalar &scalar) const {
     static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser aritmetico");
 
     const float scalar_f = static_cast<float>(scalar);
 
-    if (std::abs(scalar_f) < EPSILON) {
+    if (std::abs(scalar_f) < PHYS_EPSILON) {
         throw std::domain_error("Division por (casi) cero en un Vector4D");
     }
 

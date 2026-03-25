@@ -373,7 +373,7 @@ void example8_homogeneous_coordinates() {
     // ToVector3D sobre una direccion (w=0) lanza std::domain_error
     std::cout << "\nToVector3D() sobre una direccion (w=0):\n";
     try {
-        direction.ToVector3D();
+        PHYS_UNUSED(direction.ToVector3D());
     } catch (const std::domain_error& e) {
         std::cout << "  Excepcion capturada: " << e.what() << "\n";
     }
@@ -416,7 +416,7 @@ void example9_distance() {
     Vector4D bad_dir(1.0f, 0.0f, 0.0f, 0.0f);
     std::cout << "\nDistance entre una direccion y un punto:\n";
     try {
-        Vector4D::Distance(bad_dir, p1);
+        PHYS_UNUSED(Vector4D::Distance(bad_dir, p1));
     } catch (const std::domain_error& e) {
         std::cout << "  Excepcion capturada: " << e.what() << "\n";
     }

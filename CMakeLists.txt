@@ -19,13 +19,18 @@ add_library(physics
     src/math/vector4d.cpp
     src/math/matrix4d.cpp
     src/math/quaternion.cpp
-    )
+)
 
 # Headers
 target_include_directories(physics
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+)
+
+# Añadir al target physics
+target_compile_definitions(physics PUBLIC
+    $<$<CONFIG:Debug>:PHYS_DEBUG>
 )
 
 # Tests

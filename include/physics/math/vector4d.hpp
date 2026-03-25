@@ -1,45 +1,73 @@
 #pragma once
 
-#include "physics/math/vector3d.hpp"
 #include <type_traits>
 #include <stdexcept>
 
+#include "physics/math/vector3d.hpp"
+#include "physics/core/config.hpp"
+#include "physics/core/macros.hpp"
+
 class Vector4D {
 private:
-    float x_, y_, z_, w_;
+    real x_, y_, z_, w_;
 
 public:
     // Constructores
     Vector4D();
-    Vector4D(float x, float y, float z, float w);
-    Vector4D(const float arr[4]);
+    Vector4D(real x, real y, real z, real w);
+    Vector4D(const real arr[4]);
     
     explicit Vector4D(const Vector3D &vect);
-    Vector4D(const Vector3D &vect, float w);
+    Vector4D(const Vector3D &vect, real w);
 
     // Getters
-    float x() const;
-    float y() const;
-    float z() const;
-    float w() const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE real x() const { return x_; }
+    PHYS_NODISCARD PHYS_FORCE_INLINE real y() const { return y_; }
+    PHYS_NODISCARD PHYS_FORCE_INLINE real z() const { return z_; }
+    PHYS_NODISCARD PHYS_FORCE_INLINE real w() const { return w_; }
 
     // Setters
-    void set_x(float x);
-    void set_y(float y);
-    void set_z(float z);
-    void set_w(float w);
+    PHYS_FORCE_INLINE void set_x(real x) { x_ = x; }
+    PHYS_FORCE_INLINE void set_y(real y) { y_ = y; }
+    PHYS_FORCE_INLINE void set_z(real z) { z_ = z; }
+    PHYS_FORCE_INLINE void set_w(real w) { w_ = w; }
 
     // Acceso por indices []
-    float operator [] (int index) const;
-    float &operator [] (int index);
+    PHYS_NODISCARD real operator [] (int index) const;
+    real &operator [] (int index);
 
     // Operadores suma y resta in place entre vectores
-    Vector4D &operator += (const Vector4D &rhs);
-    Vector4D &operator -= (const Vector4D &rhs);
+    PHYS_FORCE_INLINE Vector4D &operator += (const Vector4D &rhs) {
+        x_ += rhs.x_;
+        y_ += rhs.y_;
+        z_ += rhs.z_;
+        w_ += rhs.w_;
+
+        return *this;
+    }
+
+    PHYS_FORCE_INLINE Vector4D &operator -= (const Vector4D &rhs) {
+        x_ -= rhs.x_;
+        y_ -= rhs.y_;
+        z_ -= rhs.z_;
+        w_ -= rhs.w_;
+
+        return *this;
+    }
     
     // Operadores suma y resta entre vectores
-    Vector4D operator + (const Vector4D &rhs) const;
-    Vector4D operator - (const Vector4D &rhs) const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE Vector4D operator + (const Vector4D &rhs) const {
+        return Vector4D(x_ + rhs.x_, y_ + rhs.y_, z_ + rhs.z_, w_ + rhs.w_);
+    }
+
+    PHYS_NODISCARD PHYS_FORCE_INLINE Vector4D operator - (const Vector4D &rhs) const {
+        return Vector4D(x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_, w_ - rhs.w_);
+    }
+
+    // Operador de negacion
+    PHYS_NODISCARD PHYS_FORCE_INLINE Vector4D operator - () const {
+        return Vector4D(-x_, -y_, -z_, -w_);
+    }
 
     // Operadores multiplicación y división con escalar in place
     template <typename Scalar>
@@ -53,48 +81,60 @@ public:
     template <typename Scalar>
     Vector4D operator / (const Scalar &scalar) const;
 
-    // Operador de negacion
-    Vector4D operator - () const;
-
     // Operadores de comparación
-    bool operator == (const Vector4D &rhs) const;
-    bool operator != (const Vector4D &rhs) const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE bool operator == (const Vector4D &rhs) const {
+        return (std::abs(x_ - rhs.x_) <= PHYS_EPSILON &&
+                std::abs(y_ - rhs.y_) <= PHYS_EPSILON &&
+                std::abs(z_ - rhs.z_) <= PHYS_EPSILON &&
+                std::abs(w_ - rhs.w_) <= PHYS_EPSILON);
+    }
+
+    PHYS_NODISCARD PHYS_FORCE_INLINE bool operator != (const Vector4D &rhs) const {
+        return !(*this == rhs);
+    }
 
     // Producto punto
-    float Dot4D (const Vector4D &rhs) const;
+    PHYS_NODISCARD PHYS_FORCE_INLINE real Dot4D (const Vector4D &rhs) const {
+        return (
+            x_ * rhs.x() +
+            y_ * rhs.y() +
+            z_ * rhs.z() +
+            w_ * rhs.w()
+        );
+    }
 
     // Producto cruz
-    Vector4D ComponentWiseMultiply (const Vector4D &rhs) const;
+    PHYS_NODISCARD Vector4D ComponentWiseMultiply (const Vector4D &rhs) const;
 
     // Magnitud y magnitud al cuadrado
-    float Magnitude () const;
-    float SquareMagnitude () const;
+    PHYS_NODISCARD real Magnitude () const;
+    PHYS_NODISCARD real SquareMagnitude () const;
 
     // Normalización
     Vector4D &Normalize ();
-    Vector4D Normalized () const;
+    PHYS_NODISCARD Vector4D Normalized () const;
 
     // Distancia y distancia cuadrada
-    static float Distance(const Vector4D &vecA, const Vector4D &vecB);
-    static float SquareDistance(const Vector4D &vecA, const Vector4D &vecB);
+    PHYS_NODISCARD static real Distance(const Vector4D &vecA, const Vector4D &vecB);
+    PHYS_NODISCARD static real SquareDistance(const Vector4D &vecA, const Vector4D &vecB);
 
     // Operadores de homogenizacion
     Vector4D &Homogenize ();
-    Vector4D Homogenized () const;
-    bool IsPoint () const;
-    bool IsDirection () const;
+    PHYS_NODISCARD Vector4D Homogenized () const;
+    PHYS_NODISCARD bool IsPoint () const;
+    PHYS_NODISCARD bool IsDirection () const;
 
     // Conversión a Vector3D
-    Vector3D ToVector3D() const;
-    Vector3D ToDirection3D() const;
+    PHYS_NODISCARD Vector3D ToVector3D() const;
+    PHYS_NODISCARD Vector3D ToDirection3D() const;
 
     // Modificadores
     Vector4D &MakePoint ();
     Vector4D &MakeDirection ();
 
     // Obtener data 
-    const float *Data () const;
-    float *Data ();
+    PHYS_NODISCARD const real *Data () const;
+    real *Data ();
 };
 
 #include "vector4d.inl"
