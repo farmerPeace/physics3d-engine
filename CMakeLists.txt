@@ -56,6 +56,10 @@ if (BUILD_TESTS)
     add_executable(test_quaternion tests/math/test_quaternion.cpp)
     target_link_libraries(test_quaternion physics)
     add_test(NAME quaternion_test COMMAND test_quaternion)
+
+#    add_executable(test_transform tests/math/test_transform.cpp)
+#    target_link_libraries(test_transform physics)
+#    add_test(NAME transform_test COMMAND test_transform)
 endif()
 
 # Ejemplos

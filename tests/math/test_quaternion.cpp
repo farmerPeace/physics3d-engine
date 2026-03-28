@@ -162,7 +162,7 @@ void test_scalar_operations() {
     q2 /= 2.0f;                    assert(quat_eq(q2, q));
 
     bool caught = false;
-    try { q / 0.0f; } catch (const std::domain_error &) { caught = true; }
+    try { PHYS_UNUSED(q / 0.0f); } catch (const std::domain_error &) { caught = true; }
     assert(caught);
 
     std::cout << "test_scalar_operations: PASSED\n";
@@ -206,7 +206,7 @@ void test_conjugate_and_inverse() {
     assert(quat_eq(u * u.Inverse(), Quaternion::Identity()));
 
     bool caught = false;
-    try { Quaternion(0,0,0,0).Inverse(); } catch (const std::domain_error &) { caught = true; }
+    try { PHYS_UNUSED(Quaternion(0,0,0,0).Inverse()); } catch (const std::domain_error &) { caught = true; }
     assert(caught);
     std::cout << "test_conjugate_and_inverse: PASSED\n";
 }
@@ -400,7 +400,7 @@ void test_exponential_and_logarithm() {
 
     // log de magnitud cero lanza excepcion
     bool caught = false;
-    try { Quaternion(0,0,0,0).Logarithm(); } catch (const std::domain_error &) { caught = true; }
+    try { PHYS_UNUSED(Quaternion(0,0,0,0).Logarithm()); } catch (const std::domain_error &) { caught = true; }
     assert(caught);
 
     std::cout << "test_exponential_and_logarithm: PASSED\n";

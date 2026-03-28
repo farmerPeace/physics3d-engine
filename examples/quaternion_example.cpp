@@ -332,7 +332,7 @@ void example6_dot_conjugate_inverse() {
 
     // Inverso de cuaternion nulo lanza excepcion
     try {
-        Quaternion(0, 0, 0, 0).Inverse();
+        PHYS_UNUSED(Quaternion(0, 0, 0, 0).Inverse());
     } catch (const std::domain_error& e) {
         std::cout << "\nInverse(0,0,0,0) -> excepcion: " << e.what() << "\n";
     }
@@ -720,7 +720,7 @@ void example13_exp_log() {
 
     // El logaritmo del cuaternion nulo lanza excepcion
     try {
-        Quaternion(0, 0, 0, 0).Logarithm();
+        PHYS_UNUSED(Quaternion(0, 0, 0, 0).Logarithm());
     } catch (const std::domain_error& e) {
         std::cout << "\nlog(0,0,0,0) -> excepcion: " << e.what() << "\n";
     }

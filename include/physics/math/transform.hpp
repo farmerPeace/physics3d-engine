@@ -42,11 +42,11 @@ public:
         return position_ + rotated;
     }
 
-    PHYS_FORCE_INLINE const Vector3D TransformDirection(const Vector3D &direction) const {
+    PHYS_FORCE_INLINE Vector3D TransformDirection(const Vector3D &direction) const {
         return rotation_.Rotate(direction);
     }
 
-    PHYS_FORCE_INLINE const Vector3D TransformVector(const Vector3D &vector) const {
+    PHYS_FORCE_INLINE Vector3D TransformVector(const Vector3D &vector) const {
         Vector3D scaled(
             vector.x() * scale_.x(),
             vector.y() * scale_.y(),
@@ -67,6 +67,10 @@ public:
 
         // Rotacion inversa
         Vector3D rotated = rotation_.Conjugate().Rotate(translated);
+
+        PHYS_ASSERT_MSG(std::abs(scale_.x()) > PHYS_EPSILON, "Escala X es cero");
+        PHYS_ASSERT_MSG(std::abs(scale_.y()) > PHYS_EPSILON, "Escala Y es cero");
+        PHYS_ASSERT_MSG(std::abs(scale_.z()) > PHYS_EPSILON, "Escala Z es cero");
 
         // Escala inversa
         return Vector3D(

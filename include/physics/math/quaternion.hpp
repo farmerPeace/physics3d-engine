@@ -21,6 +21,11 @@ public:
     PHYS_NODISCARD const real *Data() const;
     real *Data();
 
+    PHYS_NODISCARD PHYS_FORCE_INLINE real w() const { return w_; }
+    PHYS_NODISCARD PHYS_FORCE_INLINE real x() const { return x_; }
+    PHYS_NODISCARD PHYS_FORCE_INLINE real y() const { return y_; }
+    PHYS_NODISCARD PHYS_FORCE_INLINE real z() const { return z_; }
+
     // Acceso por indices
     PHYS_NODISCARD real operator [] (int index) const;
     real &operator [] (int index);
