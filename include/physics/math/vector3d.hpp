@@ -56,10 +56,33 @@ public:
 
     // Multiplicación y división con escalar
     template <typename Scalar>
-    Vector3D &operator *= (const Scalar &scalar);
+    PHYS_FORCE_INLINE Vector3D operator *= (const Scalar &scalar) {
+        static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser tipo aritmetico");
+
+        x_ *= static_cast<float>(scalar);
+        y_ *= static_cast<float>(scalar);
+        z_ *= static_cast<float>(scalar);
+
+        return *this;
+    }
 
     template <typename Scalar>
-    Vector3D &operator /= (const Scalar &scalar);
+    PHYS_FORCE_INLINE Vector3D operator /= (const Scalar &scalar) {
+        static_assert(std::is_arithmetic_v<Scalar>, "Scalar debe ser tipo aritmetico");
+        
+        const float scalar_f = static_cast<float>(scalar);
+
+        if (std::abs(scalar_f) < PHYS_EPSILON) {
+            throw std::domain_error("División por casi cero en un Vector3D");
+        }
+
+        const float inv = 1.0f / scalar_f;
+        x_ *= inv;
+        y_ *= inv;
+        z_ *= inv;
+
+        return *this;
+    }
 
     // Operadores de comparación
     PHYS_NODISCARD PHYS_FORCE_INLINE bool operator == (const Vector3D &rhs) const {
@@ -103,14 +126,22 @@ public:
     PHYS_NODISCARD static real SquaredDistance(const Vector3D &a, const Vector3D &b);
 };
 
-// Funciones globales
+// Multiplicación escalar por ambos lados
 template <typename Scalar>
-Vector3D operator * (const Scalar &scalar, Vector3D vect);
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator *(const Scalar &scalar, Vector3D vect) {
+    vect *= scalar;
+    return vect;
+}
 
 template <typename Scalar>
-Vector3D operator * (Vector3D vect, const Scalar &scalar);
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator *(Vector3D vect, const Scalar &scalar) {
+    vect *= scalar;
+    return vect;
+}
 
-template <typename Scalar>
-Vector3D operator / (Vector3D vect, const Scalar &scalar);
-
-#include "vector3d.inl"
+// División escalar
+template<typename Scalar>
+PHYS_NODISCARD PHYS_FORCE_INLINE Vector3D operator / (Vector3D vect, const Scalar& scalar) {
+    vect /= scalar;
+    return vect;
+}

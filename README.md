@@ -15,6 +15,10 @@
 # Flujo del proyecto
 La siguiente sección del `README.md` se centra en el progreso del proyecto, las partes implementadas, las partes en proceso de implementación y en progreso de implementación; así mismo, una sección que incluye la dirección del proyecto por etapas en las que se implementarán los diferentes módulos correspondientes.
 ## ✅ Completado
+- **Core**
+	- [x] Macros `core/macros`
+	- [x] Configuraciones `core/config`
+	- [x] Tipos `core/types`
 - **Matemáticas** `/math`
 	- [x] Vector3D `vector3d`
 	- [x] Vector4D `vector4d`
@@ -22,9 +26,6 @@ La siguiente sección del `README.md` se centra en el progreso del proyecto, las
 	- [x] Matrix4D `matrix4d`
 	- [x] Quaternion `quaternion`
 ## 🔄 En progreso
-- [ ] Macros `core/macros`
-- [ ] Configuraciones `core/config`
-- [ ] Tipos `core/types`
 ## ❌ Sin implementar
 - **Matemáticas** `/math`
 	- [ ] Transformaciones `transform`

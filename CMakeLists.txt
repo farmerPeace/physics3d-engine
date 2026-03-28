@@ -19,6 +19,7 @@ add_library(physics
     src/math/vector4d.cpp
     src/math/matrix4d.cpp
     src/math/quaternion.cpp
+    src/math/transform.cpp
 )
 
 # Headers
