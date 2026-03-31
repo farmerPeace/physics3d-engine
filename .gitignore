@@ -30,3 +30,7 @@ example_vector3d
 *.tmp
 *.log
 *.txt
+
+# Ejemplos y tests
+tests/
+examples/

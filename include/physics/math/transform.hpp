@@ -58,6 +58,10 @@ public:
 
     // Metodos de transformación inversa
     PHYS_FORCE_INLINE Vector3D InverseTransformPoint(const Vector3D &point) const {
+        PHYS_ASSERT_MSG(std::abs(scale_.x()) > PHYS_EPSILON, "Escala X es cero");
+        PHYS_ASSERT_MSG(std::abs(scale_.y()) > PHYS_EPSILON, "Escala Y es cero");
+        PHYS_ASSERT_MSG(std::abs(scale_.z()) > PHYS_EPSILON, "Escala Z es cero");
+        
         // Traslacion inversa
         Vector3D translated (
             point.x() - position_.x(),
@@ -67,10 +71,6 @@ public:
 
         // Rotacion inversa
         Vector3D rotated = rotation_.Conjugate().Rotate(translated);
-
-        PHYS_ASSERT_MSG(std::abs(scale_.x()) > PHYS_EPSILON, "Escala X es cero");
-        PHYS_ASSERT_MSG(std::abs(scale_.y()) > PHYS_EPSILON, "Escala Y es cero");
-        PHYS_ASSERT_MSG(std::abs(scale_.z()) > PHYS_EPSILON, "Escala Z es cero");
 
         // Escala inversa
         return Vector3D(
@@ -86,6 +86,10 @@ public:
     }
 
     PHYS_FORCE_INLINE Vector3D InverseTransformVector(const Vector3D &vector) const {
+        PHYS_ASSERT_MSG(std::abs(scale_.x()) > PHYS_EPSILON, "Escala X es cero");
+        PHYS_ASSERT_MSG(std::abs(scale_.y()) > PHYS_EPSILON, "Escala Y es cero");
+        PHYS_ASSERT_MSG(std::abs(scale_.z()) > PHYS_EPSILON, "Escala Z es cero");
+
         // Rotación y escala inversas
         Vector3D rotated = rotation_.Conjugate().Rotate(vector);
         return Vector3D(

@@ -57,9 +57,9 @@ if (BUILD_TESTS)
     target_link_libraries(test_quaternion physics)
     add_test(NAME quaternion_test COMMAND test_quaternion)
 
-#    add_executable(test_transform tests/math/test_transform.cpp)
-#    target_link_libraries(test_transform physics)
-#    add_test(NAME transform_test COMMAND test_transform)
+    add_executable(test_transform tests/math/test_transform.cpp)
+    target_link_libraries(test_transform physics)
+    add_test(NAME transform_test COMMAND test_transform)
 endif()
 
 # Ejemplos
@@ -78,4 +78,7 @@ if (BUILD_EXAMPLES)
 
     add_executable(example_quaternion examples/quaternion_example.cpp)
     target_link_libraries(example_quaternion physics)
+
+    add_executable(example_transform examples/transform_example.cpp)
+    target_link_libraries(example_transform physics)
 endif()

@@ -24,6 +24,13 @@ Transform Transform::Combine(const Transform &parent, const Transform &child) {
 }
 
 Transform Transform::Inverted() const {
+    // Nota: la inversa exacta de un TRS con escala no uniforme no es otro TRS.
+    // Este resultado es exacto solo para escala uniforme. Para el caso general,
+    // usar InverseTransformPoint directamente.
+    PHYS_ASSERT_MSG(std::abs(scale_.x()) > PHYS_EPSILON, "Escala X es cero");
+    PHYS_ASSERT_MSG(std::abs(scale_.y()) > PHYS_EPSILON, "Escala Y es cero");
+    PHYS_ASSERT_MSG(std::abs(scale_.z()) > PHYS_EPSILON, "Escala Z es cero");
+
     Quaternion invRotation = rotation_.Conjugate(); // para unitarios, Conjugate == Inverse
     Vector3D invScale(1.0f / scale_.x(), 1.0f / scale_.y(), 1.0f / scale_.z());
     Vector3D invPosition = invRotation.Rotate(
